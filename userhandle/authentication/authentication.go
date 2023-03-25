@@ -12,7 +12,7 @@ import (
 )
 
 func JWTAuthCheck(c *gin.Context) {
-   //[TODO] We can improve security by doing a database check after getting the claims
+	//[DONE] We can improve security by doing a database check after getting the claims
 	parser_struct := jwt.Parser{
 		UseJSONNumber:        true,  //Force number to be raw numbers and not strings
 		SkipClaimsValidation: false, //Forces password validation
@@ -28,24 +28,39 @@ func JWTAuthCheck(c *gin.Context) {
 	}
 
 	//The second parameter is a callback function that Parse function executes
-	token, err := parser_struct.Parse(current_token_header[0], func(token *jwt.Token) (interface{}, error) {
+	claims := jwt.MapClaims{}
+	token, err := parser_struct.ParseWithClaims(current_token_header[0], claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte("shoouldbekeptsecret"), nil
 		//[TODO]Should move the password to a global hidden config file
 	})
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{
-         "status" : false,
+			"status":  false,
 			"message": err.Error(),
 		})
-		log.Println("[WARN] Something going on with authentication!!!",err)
+		log.Println("[WARN] Something going on with authentication!!!", err)
 		c.Abort()
 		return
 	}
 	if token.Valid {
 		//Auth is succesfull
-		c.Next()
+		//Do a quick DB lookup to actually see users existence
+		user_query := database.User{
+			Username: claims["username"].(string),
+		}
+		status, _ := database.GetUserRecord(user_query)
+		if status {
+			c.Next()
+		} else {
+			c.JSON(http.StatusProxyAuthRequired, gin.H{
+				"status":  false,
+				"message": "Auth failed, cannot find user records!",
+			})
+			log.Panic("[PANIC] JWT SECRET LEAKED!!!!!!!")
+		}
 	} else {
 		c.JSON(http.StatusProxyAuthRequired, gin.H{
+			"status":  false,
 			"message": "Auth failed! Invalid JWT token.",
 		})
 		log.Println("[WARN] Request without any auth attempt tried gaining access!!!")
@@ -54,45 +69,44 @@ func JWTAuthCheck(c *gin.Context) {
 	}
 }
 
-func GenerateAuthToken(user_record database.User) (string,int,bool,string,*communication.LoginClaims){
+func GenerateAuthToken(user_record database.User) (string, int, bool, string, *communication.LoginClaims) {
 	mySigningKey := []byte("shoouldbekeptsecret")
 	// Create the Claims
 	claims := communication.LoginClaims{
 		user_record.Username,
-      user_record.DOB,
-      user_record.UserType,
+		user_record.DOB,
+		user_record.UserType,
 		jwt.StandardClaims{
-			Issuer:    "userservice",
+			Issuer: "userservice",
 		},
-      //[TODO] No expiry time, should implement it.
+		//[TODO] No expiry time, should implement it.
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	ss, err := token.SignedString(mySigningKey)
-   if err!=nil{
-      return "something went wrong on our side, please try again later.",http.StatusInternalServerError,false,"",nil
-   }
-   return "Logged in succesfully!",http.StatusOK,true,ss,&claims
+	if err != nil {
+		return "something went wrong on our side, please try again later.", http.StatusInternalServerError, false, "", nil
+	}
+	return "Logged in succesfully!", http.StatusOK, true, ss, &claims
 }
 
-
-func GetClaimsInfo(c *gin.Context) map[string]interface{}{
-   //[TODO]Maybe possible to merge with middleware auth check 
-   //[TODO]Maybe can inject to request headers in middleware only
+func GetClaimsInfo(c *gin.Context) map[string]interface{} {
+	//[TODO]Maybe possible to merge with middleware auth check
+	//[TODO]Maybe can inject to request headers in middleware only
 	parser_struct := jwt.Parser{
 		UseJSONNumber:        true,  //Force number to be raw numbers and not strings
 		SkipClaimsValidation: false, //Forces password validation
 	}
 	current_token_header := c.Request.Header["Token"]
-   claims := jwt.MapClaims{}
-	token, _ := parser_struct.ParseWithClaims(current_token_header[0], claims,func(token *jwt.Token) (interface{}, error) {
+	claims := jwt.MapClaims{}
+	token, _ := parser_struct.ParseWithClaims(current_token_header[0], claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte("shoouldbekeptsecret"), nil
 		//[TODO]Should move the password to a global hidden config file
 	})
-   if token.Valid{
-      //Above if condition is redundant 
-      return claims//Is a hashmap k-v pair
-   }
-   log.Panic("Someeone is messing with memory stuff!!")
-   return nil
+	if token.Valid {
+		//Above if condition is redundant
+		return claims //Is a hashmap k-v pair
+	}
+	log.Panic("Someeone is messing with memory stuff!!")
+	return nil
 }

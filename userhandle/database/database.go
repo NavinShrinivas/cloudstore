@@ -58,7 +58,20 @@ func CheckUserRecords(query_user communication.LoginRequest) (string, int, bool,
 		return "Invalid user records", http.StatusForbidden, false, nil
 	}
 }
-
+func GetUserRecord(query_user User) (bool, *User) {
+	db, err := GetDatabaseConnection()
+	if err != nil {
+		return false, nil
+	}
+	var existing_user User
+	db.First(&existing_user, &User{Username: query_user.Username})
+	if existing_user.Username == query_user.Username {
+		//Need to do this check even though we have primary key as gorm add's it own primary key 'Id' making our entire primary key compostie and non uniuqe
+		return true, &existing_user
+	} else {
+		return false, nil
+	}
+}
 func UpdateUserRecord(new_info communication.EditRequest, claims map[string]interface{}) (string, int, bool) {
 	//Here we can check if a person is trying to modify a non existant record, this means the JWT password HAS BEEN LEAKED!!!!
 	db, err := GetDatabaseConnection()

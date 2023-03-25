@@ -40,7 +40,7 @@ func main() {
 		})
 	})
 
-	r.GET("/login", func(c *gin.Context) {
+	r.POST("/login", func(c *gin.Context) {
 		var b communication.LoginRequest
 		err := c.BindJSON(&b)
 		if err != nil {
@@ -92,6 +92,12 @@ func main() {
 		c.JSON(httpstatus, gin.H{
 			"status":  status,
 			"message": message,
+		})
+	})
+	r.GET("/auth", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  true,
+         "message": "Valid user and token!",
 		})
 	})
 	s := &http.Server{
