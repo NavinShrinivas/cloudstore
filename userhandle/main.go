@@ -95,9 +95,11 @@ func main() {
 		})
 	})
 	r.GET("/auth", func(c *gin.Context) {
+		claims := authentication.GetClaimsInfo(c)
 		c.JSON(http.StatusOK, gin.H{
 			"status":  true,
          "message": "Valid user and token!",
+         "claims" : claims,
 		})
 	})
 	s := &http.Server{

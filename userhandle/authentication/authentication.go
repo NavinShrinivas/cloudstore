@@ -29,7 +29,8 @@ func JWTAuthCheck(c *gin.Context) {
 
 	//The second parameter is a callback function that Parse function executes
 	claims := jwt.MapClaims{}
-	token, err := parser_struct.ParseWithClaims(current_token_header[0], claims, func(token *jwt.Token) (interface{}, error) {
+   log.Println(len(current_token_header[0]),current_token_header[0])
+   token, err := parser_struct.ParseWithClaims(string(current_token_header[0]), claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte("shoouldbekeptsecret"), nil
 		//[TODO]Should move the password to a global hidden config file
 	})
