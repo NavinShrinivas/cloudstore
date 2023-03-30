@@ -1,9 +1,8 @@
 package communication
 
-import(
+import (
 	"github.com/golang-jwt/jwt"
-   "gorm.io/datatypes"
-
+	"gorm.io/datatypes"
 )
 
 type LoginClaims struct {
@@ -15,7 +14,22 @@ type LoginClaims struct {
 }
 
 type AuthResponse struct {
-   Status bool `json:"status"`
-   Message string `json:"message"`
-   Claims LoginClaims `json:"claims"`
+	Status  bool        `json:"status"`
+	Message string      `json:"message"`
+	Claims  LoginClaims `json:"claims"`
+}
+
+type CreateProductRequest struct {
+	Name         string  `json:"name"`
+	Price        float32 `json:"price"`
+	Limit        int     `json:"limit"`
+	Manufacturer string  `json:"manufacturer"`
+}
+
+type EditProductRequest struct {
+	ID           int     `json:"id"`
+	Name         string  `json:"name"`
+	Price        float32 `json:"price"`
+	Limit        int     `json:"limit"`
+	Manufacturer string  `json:"manufacturer"`
 }

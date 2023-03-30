@@ -19,14 +19,15 @@ type LoginClaims struct {
 	jwt.StandardClaims
 }
 
-type LoginResponse struct{
-   Status bool `json:"status"`
-   Message string `json:"message"`
-   Claims LoginClaims `json:"Claims"`
-   Token string `json:"token"`
+type LoginResponse struct {
+	Status  bool        `json:"status"`
+	Message string      `json:"message"`
+	Claims  LoginClaims `json:"Claims"`
+	Token   string      `json:"token"`
 }
 
 type EditRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+
