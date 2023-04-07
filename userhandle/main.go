@@ -22,7 +22,7 @@ func main() {
 			"message": "user handle services are live.",
 		})
 	})
-	r.POST("/register", func(c *gin.Context) {
+	r.POST("/user", func(c *gin.Context) {
 		var b database.User //Feel free to create different communication structure for your API's
 		err := c.BindJSON(&b)
 		if err != nil {
@@ -76,7 +76,7 @@ func main() {
 	})
 	r.Use(authentication.JWTAuthCheck) //[NOTE] All endpoints below this need auth (should have `Token` header in the request) 
    //If a person has another persons valid JWT token they can wrek havoc
-	r.POST("/edit", func(c *gin.Context) {
+	r.PUT("/user", func(c *gin.Context) {
 		var b communication.EditRequest
 		err := c.BindJSON(&b)
 		if err != nil {
@@ -94,7 +94,7 @@ func main() {
 			"message": message,
 		})
 	})
-	r.GET("/auth", func(c *gin.Context) {
+	r.GET("/authcheck", func(c *gin.Context) {
 		claims := authentication.GetClaimsInfo(c)
 		c.JSON(http.StatusOK, gin.H{
 			"status":  true,
