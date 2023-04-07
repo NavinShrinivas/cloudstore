@@ -74,32 +74,55 @@ func EditProduct(product_details communication.EditProductRequest, claims commun
 	}
 }
 
-func GetAllProducts() (string,int,bool,[]Product){
-   var query_result []Product 
-   db,err := GetDatabaseConnection()
+func DeleteProduct(product_details communication.DeleteProductRequest, claims communication.LoginClaims) (string, int, bool) {
+	db, err := GetDatabaseConnection()
 	if err != nil {
-		return "Internal server error, please try again later.", http.StatusInternalServerError, false,nil
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false
 	}
-   result := db.Find(&query_result)
-   if result.Error !=nil{
-		return "Internal server error, please try again later.", http.StatusInternalServerError, false,nil
-   }
-   return "All products in store.",http.StatusOK,true,query_result
+	query_result := Product{}
+	db.First(&query_result, product_details.ID)
+	if query_result.ID != uint(product_details.ID) {
+		return "Product with this product ID not found.", http.StatusForbidden, false
+	} else {
+		if claims.Username != query_result.Username {
+			return "You do not have permission to do this", http.StatusForbidden, false
+			log.Println("[WARN] Someone trying to break the system, wrong seller trying to edit non owned product.")
+		}
+		query_result.ID = uint(product_details.ID)
+		result := db.Delete(&query_result)
+		if result.RowsAffected == 0 {
+			return "Internal server error, please try again later", http.StatusInternalServerError, false
+		} else {
+			return "Product record deleted", http.StatusOK, true
+		}
+	}
 }
 
-
-func GetAllSellerProducts(claims communication.LoginClaims) (string,int,bool,[]Product){
-   query_prod := Product{
-      Username : claims.Username,
-   }
-   var query_result []Product 
-   db,err := GetDatabaseConnection()
+func GetAllProducts() (string, int, bool, []Product) {
+	var query_result []Product
+	db, err := GetDatabaseConnection()
 	if err != nil {
-		return "Internal server error, please try again later.", http.StatusInternalServerError, false,nil
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
 	}
-   result := db.Where(&query_prod).Find(&query_result)
-   if result.Error !=nil{
-		return "Internal server error, please try again later.", http.StatusInternalServerError, false,nil
-   }
-   return "All products from this user",http.StatusOK,true,query_result
+	result := db.Find(&query_result)
+	if result.Error != nil {
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
+	}
+	return "All products in store.", http.StatusOK, true, query_result
+}
+
+func GetAllSellerProducts(claims communication.LoginClaims) (string, int, bool, []Product) {
+	query_prod := Product{
+		Username: claims.Username,
+	}
+	var query_result []Product
+	db, err := GetDatabaseConnection()
+	if err != nil {
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
+	}
+	result := db.Where(&query_prod).Find(&query_result)
+	if result.Error != nil {
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
+	}
+	return "All products from this user", http.StatusOK, true, query_result
 }

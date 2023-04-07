@@ -33,3 +33,7 @@ type EditProductRequest struct {
 	Limit        int     `json:"limit"`
 	Manufacturer string  `json:"manufacturer"`
 }
+
+type DeleteProductRequest struct {
+	ID int `json:"id"`
+}

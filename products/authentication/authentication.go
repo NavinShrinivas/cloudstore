@@ -14,7 +14,7 @@ import (
 
 func CheckUserAuthMiddleware(c *gin.Context) {
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "http://localhost:5001/auth", nil)
+	req, _ := http.NewRequest("GET", "http://localhost:5001/authcheck", nil)
 	current_token_header := c.Request.Header["Token"]
 	if len(current_token_header) < 1 {
 		c.JSON(http.StatusNetworkAuthenticationRequired, gin.H{
@@ -51,7 +51,7 @@ func CheckUserAuthMiddleware(c *gin.Context) {
 
 func GetClaims(c *gin.Context) *communication.AuthResponse {
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "http://localhost:5001/auth", nil)
+	req, _ := http.NewRequest("GET", "http://localhost:5001/authcheck", nil)
 	current_token_header := c.Request.Header["Token"]
 	req.Header = http.Header{
 		"Token": {current_token_header[0]},

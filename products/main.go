@@ -100,6 +100,43 @@ func main() {
 		}
 	})
 
+	r.DELETE("/product", func(c *gin.Context) {
+		wrappedclaims := authentication.GetClaims(c)
+		claims := wrappedclaims.Claims
+		if claims.UserType != "seller" {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  false,
+				"message": "invalid request. This endpoint is valid only for seller.",
+			})
+			log.Println("[WARN] Normal user trying to gain access to products, leak of protected endpoints. Possible DDOS attempt.")
+			return
+		}
+		var b communication.DeleteProductRequest
+		err := c.BindJSON(&b)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  false,
+				"message": "invalid request",
+			})
+			return
+		}
+		message, httpstatus, status := database.DeleteProduct(b, claims)
+		if status {
+			c.JSON(httpstatus, gin.H{
+				"status":  status,
+				"message": message,
+			})
+			return
+		} else {
+			c.JSON(httpstatus, gin.H{
+				"status":  status,
+				"message": message,
+			})
+			return
+		}
+	})
+
 	r.GET("/product", func(c *gin.Context) {
 		wrappedclaims := authentication.GetClaims(c)
 		claims := wrappedclaims.Claims
