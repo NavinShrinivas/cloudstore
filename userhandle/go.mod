@@ -5,7 +5,6 @@ go 1.19
 require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/simplereach/timeutils v1.2.0
 	github.com/urishabh12/colored_log v0.0.0-20220922175938-ee6e41ab33df
 	gorm.io/datatypes v1.1.1
 	gorm.io/driver/mysql v1.4.7
@@ -38,7 +37,5 @@ require (
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
-	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

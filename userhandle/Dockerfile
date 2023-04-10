@@ -11,3 +11,4 @@ RUN go mod tidy
 RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld
 RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
+EXPOSE 5001
