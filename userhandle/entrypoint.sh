@@ -1,5 +1,4 @@
 #!/bin/bash
-
 service mariadb start
-mysql -u root < /userhandle/sqlsetup.sql
+./setup.sh
 go run /userhandle
