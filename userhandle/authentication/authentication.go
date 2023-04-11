@@ -95,6 +95,7 @@ func JWTAuthCheck(c *gin.Context) {
 	token, err := parser_struct.ParseWithClaims(string(current_token), claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
+
 	if err != nil {
 		c.JSON(http.StatusForbidden, gin.H{
 			"status":  false,
@@ -104,11 +105,13 @@ func JWTAuthCheck(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
 	if token.Valid {
 		user_query := database.User{
 			Username: claims["username"].(string),
 		}
 		status, _ := database.GetUserRecord(user_query)
+
 		if status {
 			c.Next()
 		} else {
@@ -143,9 +146,10 @@ func GetClaimsInfo(c *gin.Context) map[string]interface{} {
 	}
 
 	claims := jwt.MapClaims{}
-	token, _ := parser_struct.ParseWithClaims(string(current_token[0]), claims, func(token *jwt.Token) (interface{}, error) {
+	token, _ := parser_struct.ParseWithClaims(string(current_token), claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
+
 	if token.Valid {
 		//Above if condition is redundant
 		return claims //Is a hashmap k-v pair

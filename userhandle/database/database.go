@@ -113,9 +113,13 @@ func InsertUserRecord(new_user User) (string, int, bool) {
 	if existing_user.Username == new_user.Username {
 		return "This username is taken!", http.StatusConflict, false
 	}
+
+	db.First(&existing_user, &User{Email: new_user.Email})
 	if existing_user.Email == new_user.Email {
 		return "This email is already registered!", http.StatusConflict, false
 	}
+
+	db.First(&existing_user, &User{Phone: new_user.Phone})
 	if existing_user.Phone == new_user.Phone {
 		return "This phone number is already registered!", http.StatusConflict, false
 	}
