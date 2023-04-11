@@ -11,10 +11,10 @@ type LoginRequest struct {
 }
 
 type LoginClaims struct {
+	Name     string `json:"name"`
 	Username string `json:"username"`
-	// DOB      datatypes.Date `json:"dob"`
 	UserType string `json:"usertype"`
-	//type : buyer|seller|admin
+	// type : buyer|seller|admin
 	jwt.StandardClaims
 }
 
@@ -25,6 +25,12 @@ type LoginResponse struct {
 }
 
 type EditRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Address  string `json:"address"`
+}
+
+type DeleteRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }

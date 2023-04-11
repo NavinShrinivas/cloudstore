@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "fmt"
 	"net/http"
 	"time"
 
@@ -29,6 +28,8 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 		// MaxHeaderBytes: 1 << 20,
 	}
+
+	log.Println("User handle services started.")
 	log.Println("Listening on port 5001.")
 	s.ListenAndServe()
 }

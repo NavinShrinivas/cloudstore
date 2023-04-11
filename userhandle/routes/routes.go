@@ -2,7 +2,6 @@ package routes
 
 import (
 	"net/http"
-	"time"
 	"userhandle/authentication"
 	"userhandle/communication"
 	database "userhandle/database"
@@ -12,18 +11,19 @@ import (
 )
 
 func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
+
 	accountRoutes.POST("/register", func(c *gin.Context) {
-		var b database.User
-		err := c.BindJSON(&b)
+		var new_user database.User
+		err := c.BindJSON(&new_user)
 		if err != nil {
-			log.Println(err)
+			log.Println("Error in binding json", err)
 			c.JSON(http.StatusBadRequest, gin.H{
 				"status":  false,
 				"message": "invalid request",
 			})
 			return
 		}
-		message, httpstatus, status := database.PutUserRecords(b)
+		message, httpstatus, status := database.InsertUserRecord(new_user)
 		c.JSON(httpstatus, gin.H{
 			"status":  status,
 			"message": message,
@@ -31,21 +31,25 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 	})
 
 	accountRoutes.POST("/login", func(c *gin.Context) {
-		var b communication.LoginRequest
-		err := c.BindJSON(&b)
+		var LoginUser communication.LoginRequest
+		err := c.BindJSON(&LoginUser)
 		if err != nil {
-			log.Println(err)
+			log.Println("Error in binding json", err)
 			c.JSON(http.StatusBadRequest, gin.H{
 				"status":  false,
 				"message": "invalid request",
 			})
 			return
 		}
-		message, httpstatus, status, user_record := database.CheckUserRecords(b)
+
+		message, httpstatus, status, user_record := database.CheckUserRecord(LoginUser)
 		if status {
-			message, httpstatus, status, token, claims, expireTime := authentication.GenerateAuthToken(*user_record)
+			message, httpstatus, status, token, claims, lifeTime := authentication.GenerateAuthToken(*user_record)
 			if status {
-				c.SetCookie("token", token, expireTime, "/", "localhost", false, true)
+
+				c.Set("token", token)
+
+				c.SetCookie("token", token, lifeTime, "/", "localhost", false, true)
 				c.JSON(httpstatus, communication.LoginResponse{
 					Status:  status,
 					Message: message,
@@ -66,26 +70,15 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 		}
 	})
 
-	accountRoutes.Use(authentication.JWTAuthCheck)
-
-	accountRoutes.PUT("/user", func(c *gin.Context) {
-		var b communication.EditRequest
-		err := c.BindJSON(&b)
-		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusBadRequest, gin.H{
-				"status":  false,
-				"message": "invalid request",
-			})
-			return
-		}
-		claims := authentication.GetClaimsInfo(c)
-		message, httpstatus, status := database.UpdateUserRecord(b, claims)
-		c.JSON(httpstatus, gin.H{
-			"status":  status,
-			"message": message,
+	accountRoutes.POST("/logout", func(c *gin.Context) {
+		c.SetCookie("token", "", -1, "/", "localhost", false, true)
+		c.JSON(http.StatusOK, gin.H{
+			"status":  true,
+			"message": "Logged out successfully",
 		})
 	})
+
+	accountRoutes.Use(authentication.JWTAuthCheck)
 
 	accountRoutes.GET("/authcheck", func(c *gin.Context) {
 		claims := authentication.GetClaimsInfo(c)
@@ -96,11 +89,49 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 		})
 	})
 
-	accountRoutes.POST("/logout", func(c *gin.Context) {
-		c.SetCookie("token", "", -1, "/", "localhost", false, true)
+	accountRoutes.POST("/authcheck", func(c *gin.Context) {
+		claims := authentication.GetClaimsInfo(c)
 		c.JSON(http.StatusOK, gin.H{
 			"status":  true,
-			"message": "Logged out successfully",
+			"message": "Valid user and token!",
+			"claims":  claims,
+		})
+	})
+
+	accountRoutes.PUT("/update", func(c *gin.Context) {
+		var UpdateUser communication.EditRequest
+		err := c.BindJSON(&UpdateUser)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  false,
+				"message": "invalid request",
+			})
+			return
+		}
+		claims := authentication.GetClaimsInfo(c)
+		message, httpstatus, status := database.UpdateUserRecord(UpdateUser, claims)
+		c.JSON(httpstatus, gin.H{
+			"status":  status,
+			"message": message,
+		})
+	})
+
+	accountRoutes.DELETE("/delete", func(c *gin.Context) {
+		var DeleteUser communication.DeleteRequest
+		err := c.BindJSON(&DeleteUser)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  false,
+				"message": "invalid request",
+			})
+			return
+		}
+		message, httpstatus, status := database.DeleteUserRecord(DeleteUser)
+		c.JSON(httpstatus, gin.H{
+			"status":  status,
+			"message": message,
 		})
 	})
 	return false
@@ -108,10 +139,10 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 
 func RouteHandler(r *gin.Engine) {
 
-	r.GET("/status", func(c *gin.Context) {
+	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status":  true,
-			"message": "user handle services are live.",
+			"message": "User handle services are live.",
 		})
 	})
 
@@ -129,15 +160,4 @@ func RouteHandler(r *gin.Engine) {
 			"message": "404 page not found",
 		})
 	})
-
-	s := &http.Server{
-		Addr:         ":5001",
-		Handler:      r,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		// MaxHeaderBytes: 1 << 20,
-	}
-	log.Println("User handle services are live.")
-	log.Println("Listening on port 5001.")
-	s.ListenAndServe()
 }

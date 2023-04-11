@@ -2,7 +2,6 @@ FROM golang:1.19.2-bullseye
 RUN apt update -y
 RUN apt upgrade -y
 RUN apt install default-mysql-server -y
-RUN ls /etc/init.d/
 RUN mkdir /userhandle
 COPY . /userhandle/
 WORKDIR /userhandle

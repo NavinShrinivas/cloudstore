@@ -7,9 +7,11 @@ import (
 // -----Databse Models-----
 type User struct {
 	gorm.Model
-	Username string `gorm:"primaryKey" json:"username"`
-	// DOB      datatypes.Date `json:"dob"`
-	Password string `json:"password"` //[TODO]Let's skip out on hashing for inital release
-	UserType string `json:"usertype"`
-	//type : buyer|seller|admin
+	Username string `json:"username" gorm:"primaryKey" `
+	Name     string `json:"name"`
+	Email    string `json:"email"    gorm:"unique"`
+	Phone    string `json:"phone"    gorm:"unique"`
+	Password string `json:"password"`
+	UserType string `json:"usertype" gorm:"type:ENUM('buyer','seller','admin')"`
+	Address  string `json:"address"`
 }

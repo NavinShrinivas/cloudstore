@@ -1,7 +1,3 @@
-- fix /userhandles 
-    JWTAuthCheck 
-    [WARN] Something going on with authentication!!! token contains an invalid number of segments
-    
 - fix /products
 
 - integrate login and register page with backend
