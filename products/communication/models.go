@@ -2,13 +2,11 @@ package communication
 
 import (
 	"github.com/golang-jwt/jwt"
-	"gorm.io/datatypes"
 )
 
 type LoginClaims struct {
-	Username string         `json:"username"`
-	DOB      datatypes.Date `json:"dob"`
-	UserType string         `json:"usertype"`
+	Username string `json:"username"`
+	UserType string `json:"usertype"`
 	//type : buyer|seller|admin
 	jwt.StandardClaims
 }

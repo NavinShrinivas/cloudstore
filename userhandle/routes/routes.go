@@ -12,7 +12,7 @@ import (
 
 func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 
-	accountRoutes.GET("/", func(c *gin.Context) {
+	accountRoutes.GET("/status", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status":  true,
 			"message": "User handle API is running",
