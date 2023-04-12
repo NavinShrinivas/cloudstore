@@ -16,7 +16,8 @@ func CheckUserAuthMiddleware(c *gin.Context) {
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", "http://localhost:5001/authcheck", nil)
 	current_token_header := c.Request.Header["Token"]
-	if len(current_token_header) < 1 {
+	if len(current_token_header) <
+		1 {
 		c.JSON(http.StatusNetworkAuthenticationRequired, gin.H{
 			"status":  false,
 			"message": "Please provide a proper token in header!",
