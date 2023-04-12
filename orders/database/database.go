@@ -12,15 +12,55 @@ import (
 
 var db *gorm.DB
 
+<<<<<<< HEAD
 func GetDatabaseConnection() (*gorm.DB, error) {
 	dsn := "storeuser:pass1234@tcp(127.0.0.1:3306)/cloudstore?charset=utf8mb4&parseTime=True&loc=Local"
 	if db == nil { //If first time asking for database operations
+=======
+func InitDatabaseVaraiables() {
+
+	envRequired := []string{"DATABASE_USERNAME", "DATABASE_PASSWORD", "DATABASE_HOST", "DATABASE_PORT", "DATABASE_NAME"}
+
+	_, err := os.Stat(".env")
+	if err == nil {
+		secret, err := godotenv.Read()
+		if err != nil {
+			log.Panic("Error reading .env file")
+		}
+
+		for _, key := range envRequired {
+			if secret[key] != "" {
+				os.Setenv(key, secret[key])
+			}
+		}
+	}
+
+	for _, key := range envRequired {
+		if os.Getenv(key) == "" {
+			log.Panic("Environment variable " + key + " not set")
+		}
+	}
+}
+
+func GetDatabaseConnection() (*gorm.DB, error) {
+
+	databaseUsername := os.Getenv("DATABASE_USERNAME")
+	databasePassword := os.Getenv("DATABASE_PASSWORD")
+	databaseHost := os.Getenv("DATABASE_HOST")
+	databasePort := os.Getenv("DATABASE_PORT")
+	databaseName := os.Getenv("DATABASE_NAME")
+
+	dsn := databaseUsername + ":" + databasePassword + "@tcp(" + databaseHost + ":" + databasePort + ")/" + databaseName + "?charset=utf8mb4&parseTime=True&loc=Local"
+
+	if db == nil {
+>>>>>>> b1491b0 (order mservice starting)
 		var err error
 		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 		if err != nil {
 			log.Panic("Error creating a connection to databse!", err)
 			return nil, err
 		}
+<<<<<<< HEAD
 		db.AutoMigrate(&Product{})
 	}
 	return db, nil
@@ -46,3 +86,10 @@ func CreateOrder(, claims map[string]interface{}) string {
 	}
 
 }
+=======
+		db.AutoMigrate(&OrderKey{}) 
+		db.AutoMigrate(&OrderItems{}) 
+	}
+	return db, nil
+}
+>>>>>>> b1491b0 (order mservice starting)
