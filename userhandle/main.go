@@ -8,6 +8,7 @@ import (
 	database "userhandle/database"
 	routes "userhandle/routes"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/urishabh12/colored_log"
 )
@@ -19,6 +20,10 @@ func main() {
 	authentication.InitAuthVariables()
 
 	r := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"} //[TODO], add the correct origins for prod
+	config.AllowCredentials = true
+	r.Use(cors.New(config))
 	routes.RouteHandler(r)
 
 	s := &http.Server{
