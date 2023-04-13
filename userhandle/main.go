@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	envLoader "userhandle/envLoader"
@@ -21,7 +22,7 @@ func main() {
 
 	r := gin.Default()
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{os.Getenv("CORS_ORIGIN")}
+	config.AllowOrigins = strings.Split(os.Getenv("ALLOWED_ORIGINS"), ",")
 	config.AllowCredentials = true
 	r.Use(cors.New(config))
 	routes.RouteHandler(r)

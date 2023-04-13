@@ -9,7 +9,7 @@ import (
 )
 
 func CheckAndSetVariables() {
-	envRequired := []string{"PORT", "CORS_ORIGIN", "JWT_SECRET", "JWT_LIFETIME", "DATABASE_USERNAME", "DATABASE_PASSWORD", "DATABASE_HOST", "DATABASE_PORT", "DATABASE_NAME"}
+	envRequired := []string{"PORT", "ALLOWED_ORIGINS", "JWT_SECRET", "JWT_LIFETIME", "DATABASE_USERNAME", "DATABASE_PASSWORD", "DATABASE_HOST", "DATABASE_PORT", "DATABASE_NAME"}
 
 	_, err := os.Stat(".env")
 	if err == nil {
