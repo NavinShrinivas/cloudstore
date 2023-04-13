@@ -1,4 +1,4 @@
-package loader
+package envLoader
 
 import (
 	"os"
