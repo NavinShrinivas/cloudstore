@@ -7,7 +7,6 @@ import (
 	"userhandle/communication"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/joho/godotenv"
 	log "github.com/urishabh12/colored_log"
 	"golang.org/x/crypto/bcrypt"
 
@@ -16,31 +15,6 @@ import (
 )
 
 var db *gorm.DB
-
-func InitDatabaseVaraiables() {
-
-	envRequired := []string{"DATABASE_USERNAME", "DATABASE_PASSWORD", "DATABASE_HOST", "DATABASE_PORT", "DATABASE_NAME"}
-
-	_, err := os.Stat(".env")
-	if err == nil {
-		secret, err := godotenv.Read()
-		if err != nil {
-			log.Panic("Error reading .env file")
-		}
-
-		for _, key := range envRequired {
-			if secret[key] != "" {
-				os.Setenv(key, secret[key])
-			}
-		}
-	}
-
-	for _, key := range envRequired {
-		if os.Getenv(key) == "" {
-			log.Panic("Environment variable " + key + " not set")
-		}
-	}
-}
 
 func GetDatabaseConnection() (*gorm.DB, error) {
 
@@ -176,11 +150,12 @@ func GetUserRecord(query_user User) (bool, *UserInfo) {
 	}
 }
 
-func UpdateUserRecord(new_info communication.EditRequest, claims map[string]interface{}) (string, int, bool) {
+func UpdateUserRecord(new_info communication.EditRequest, claims map[string]interface{}) (string, int, bool, *UserInfo) {
+
 	//Here we can check if a person is trying to modify a non existant record, this means the JWT password HAS BEEN LEAKED!!!!
 	db, err := GetDatabaseConnection()
 	if err != nil {
-		return "Internal server error, please try again later.", http.StatusInternalServerError, false
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
 	}
 	query_user_record := User{
 		Username: claims["username"].(string),
@@ -190,32 +165,99 @@ func UpdateUserRecord(new_info communication.EditRequest, claims map[string]inte
 	db.First(&existing_user, &User{Username: query_user_record.Username})
 	if existing_user.Username != query_user_record.Username {
 		log.Panic("[PANIC] JWT SECRET BREACH!!! Username:"+claims["username"].(string), "User record not found")
-		return "Invalid malformed request", http.StatusForbidden, false
+		return "Invalid malformed request", http.StatusForbidden, false, nil
 	}
 
-	// check if password is present in the request, if not then we don't want to update it
-	if new_info.Password == "" {
-		new_info.Password = existing_user.Password
+	// check if password is correct
+	if !comparePasswords(existing_user.Password, []byte(new_info.Password)) {
+		log.Panic("[PANIC] JWT SECRET BREACH!!! Username:"+claims["username"].(string), "User record not found")
+		return "Invalid malformed request", http.StatusForbidden, false, nil
+	}
+
+	// check the fields that are being updated
+	if new_info.NewUsername == "" {
+		new_info.NewUsername = existing_user.Username
 	} else {
-		new_info.Password = hashAndSalt([]byte(new_info.Password))
+		var existing_user User
+		db.First(&existing_user, &User{Username: new_info.NewUsername})
+		if existing_user.Username == new_info.NewUsername {
+			return "This username is taken!", http.StatusConflict, false, nil
+		}
 	}
 
-	if new_info.Address == "" {
-		new_info.Address = existing_user.Address
+	if new_info.NewEmail == "" {
+		new_info.NewEmail = existing_user.Email
+	} else {
+		if !govalidator.IsEmail(new_info.NewEmail) {
+			return "Invalid email", http.StatusBadRequest, false, nil
+		}
+		var existing_user User
+		db.First(&existing_user, &User{Email: new_info.NewEmail})
+		if existing_user.Email == new_info.NewEmail {
+			return "This email is already registered!", http.StatusConflict, false, nil
+		}
+	}
+
+	if new_info.NewPhone == "" {
+		new_info.NewPhone = existing_user.Phone
+	} else {
+		isPhoneValid := regexp.MustCompile(`^(?:(?:\(?(?:00|\+)([1-4]\d\d|[1-9]\d?)\)?)?[\-\.\ \\\/]?)?((?:\(?\d{1,}\)?[\-\.\ \\\/]?){0,})(?:[\-\.\ \\\/]?(?:#|ext\.?|extension|x)[\-\.\ \\\/]?(\d+))?$`).MatchString(new_info.NewPhone)
+		if !isPhoneValid {
+			return "Invalid phone number", http.StatusBadRequest, false, nil
+		}
+		var existing_user User
+		db.First(&existing_user, &User{Phone: new_info.NewPhone})
+		if existing_user.Phone == new_info.NewPhone {
+			return "This phone number is already registered!", http.StatusConflict, false, nil
+		}
+	}
+
+	// For now we are not allowing user type to be changed
+	// if new_info.NewUserType == "" {
+	// 	new_info.NewUserType = existing_user.UserType
+	// } else {
+	// 	if new_info.NewUserType != "buyer" && new_info.NewUserType != "seller" {
+	// 		return "Invalid user type", http.StatusForbidden, false, nil
+	// 	}
+	// }
+
+	if new_info.NewName == "" {
+		new_info.NewName = existing_user.Name
+	}
+
+	if new_info.NewPassword != "" {
+		new_info.NewPassword = hashAndSalt([]byte(new_info.NewPassword))
+	} else {
+		new_info.NewPassword = existing_user.Password
+	}
+
+	if new_info.NewAddress == "" {
+		new_info.NewAddress = existing_user.Address
 	}
 
 	updated_user_record := User{
-		Username: new_info.Username,
-		Password: new_info.Password,
-		Address:  new_info.Address,
+		Username: new_info.NewUsername,
+		Password: new_info.NewPassword,
+		Name:     new_info.NewName,
+		Email:    new_info.NewEmail,
+		Phone:    new_info.NewPhone,
+		UserType: existing_user.UserType,
+		Address:  new_info.NewAddress,
 	}
 
 	result := db.Model(&User{}).Where(&query_user_record).Updates(updated_user_record)
 	if result.RowsAffected == 0 {
 		log.Panic("[PANIC] JWT SECRET BREACH!!! Username:"+claims["username"].(string), result.Error)
-		return "Invalid malformed request", http.StatusForbidden, false
+		return "Invalid malformed request", http.StatusForbidden, false, nil
 	} else {
-		return "User record updated!", http.StatusOK, true
+		return "User record updated!", http.StatusOK, true, &UserInfo{
+			Username: new_info.NewUsername,
+			Name:     new_info.NewName,
+			Email:    new_info.NewEmail,
+			Phone:    new_info.NewPhone,
+			UserType: existing_user.UserType,
+			Address:  new_info.NewAddress,
+		}
 	}
 }
 
@@ -227,7 +269,12 @@ func DeleteUserRecord(query_user communication.DeleteRequest) (string, int, bool
 
 	var existing_user User
 	db.First(&existing_user, &User{Username: query_user.Username})
-	if existing_user.Username == query_user.Username && comparePasswords(existing_user.Password, []byte(query_user.Password)) {
+
+	if existing_user.Username == "" {
+		return "Invalid user records", http.StatusForbidden, false
+	}
+
+	if comparePasswords(existing_user.Password, []byte(query_user.Password)) {
 		result := db.Delete(&User{}, &User{Username: query_user.Username})
 		if result.RowsAffected == 0 {
 			return "Something went wrong on our side, please try again later", http.StatusInternalServerError, false

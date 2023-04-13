@@ -12,22 +12,70 @@ import (
 
 func ProductRouter(productRoutes *gin.RouterGroup, r *gin.Engine) bool {
 
-	//If a person has another persons valid JWT token they can wrek havoc
 	productRoutes.GET("/status", func(c *gin.Context) {
 		database.GetDatabaseConnection()
 		c.JSON(http.StatusOK, gin.H{
 			"status":  true,
-			"message": "Product services API is up and running.",
+			"message": "Product services API is running.",
 		})
+	})
+
+	productRoutes.GET("/all", func(c *gin.Context) {
+		message, httpstatus, status, products := database.GetAllProducts()
+		if status {
+			c.JSON(httpstatus, gin.H{
+				"status":   status,
+				"message":  message,
+				"products": products,
+			})
+			return
+		} else {
+			c.JSON(httpstatus, gin.H{
+				"status":  status,
+				"message": message,
+			})
+			return
+		}
+	})
+
+	productRoutes.POST("/fetch", func(c *gin.Context) {
+
+		var b communication.FetchProductsRequest
+
+		err := c.BindJSON(&b)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  false,
+				"message": "invalid request",
+			})
+			return
+		}
+
+		message, httpstatus, status, products := database.GetProducts(b.IDs)
+		if status {
+			c.JSON(httpstatus, gin.H{
+				"status":   status,
+				"message":  message,
+				"products": products,
+			})
+			return
+		} else {
+			c.JSON(httpstatus, gin.H{
+				"status":  status,
+				"message": message,
+			})
+			return
+		}
 	})
 
 	productRoutes.Use(authentication.CheckUserAuthMiddleware)
 
-	//Business logic : Will move to insert to database only if the user is of type seller
-	productRoutes.POST("/insert", func(c *gin.Context) {
+	productRoutes.POST("/create", func(c *gin.Context) {
 		wrappedclaims := authentication.GetClaims(c)
 		claims := wrappedclaims.Claims
-		if claims.UserType != "seller" {
+
+		if claims.UserType != "admin" && claims.UserType != "seller" {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"status":  false,
 				"message": "invalid request. This endpoint is valid only for seller.",
@@ -45,7 +93,7 @@ func ProductRouter(productRoutes *gin.RouterGroup, r *gin.Engine) bool {
 			})
 			return
 		}
-		message, httpstatus, status, productid := database.SetProduct(b, claims)
+		message, httpstatus, status, productid := database.InsertProduct(b, claims)
 		if status {
 			c.JSON(httpstatus, gin.H{
 				"status":    status,
@@ -65,7 +113,7 @@ func ProductRouter(productRoutes *gin.RouterGroup, r *gin.Engine) bool {
 	productRoutes.PUT("/update", func(c *gin.Context) {
 		wrappedclaims := authentication.GetClaims(c)
 		claims := wrappedclaims.Claims
-		if claims.UserType != "seller" {
+		if claims.UserType != "admin" && claims.UserType != "seller" {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"status":  false,
 				"message": "invalid request. This endpoint is valid only for seller.",
@@ -73,7 +121,7 @@ func ProductRouter(productRoutes *gin.RouterGroup, r *gin.Engine) bool {
 			log.Println("[WARN] Normal user trying to gain access to products, leak of protected endpoints. Possible DDOS attempt.")
 			return
 		}
-		var b communication.EditProductRequest
+		var b communication.UpdateProductRequest
 		err := c.BindJSON(&b)
 		if err != nil {
 			log.Println(err)
@@ -83,11 +131,12 @@ func ProductRouter(productRoutes *gin.RouterGroup, r *gin.Engine) bool {
 			})
 			return
 		}
-		message, httpstatus, status := database.EditProduct(b, claims)
+		message, httpstatus, status, product := database.UpdateProduct(b, claims)
 		if status {
 			c.JSON(httpstatus, gin.H{
 				"status":  status,
 				"message": message,
+				"product": product,
 			})
 			return
 		} else {
@@ -102,7 +151,7 @@ func ProductRouter(productRoutes *gin.RouterGroup, r *gin.Engine) bool {
 	productRoutes.DELETE("/delete", func(c *gin.Context) {
 		wrappedclaims := authentication.GetClaims(c)
 		claims := wrappedclaims.Claims
-		if claims.UserType != "seller" {
+		if claims.UserType != "admin" && claims.UserType != "seller" {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"status":  false,
 				"message": "invalid request. This endpoint is valid only for seller.",
@@ -136,37 +185,10 @@ func ProductRouter(productRoutes *gin.RouterGroup, r *gin.Engine) bool {
 		}
 	})
 
-	productRoutes.GET("/info", func(c *gin.Context) {
+	productRoutes.GET("/seller", func(c *gin.Context) {
 		wrappedclaims := authentication.GetClaims(c)
 		claims := wrappedclaims.Claims
-		if claims.UserType != "buyer" {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"status":  false,
-				"message": "invalid request. This endpoint is valid only for buyer accounts.",
-			})
-			return
-		}
-		message, httpstatus, status, products := database.GetAllProducts()
-		if status {
-			c.JSON(httpstatus, gin.H{
-				"status":  status,
-				"message": message,
-				"items":   products,
-			})
-			return
-		} else {
-			c.JSON(httpstatus, gin.H{
-				"status":  status,
-				"message": message,
-			})
-			return
-		}
-	})
-
-	productRoutes.GET("/sellerproduct", func(c *gin.Context) {
-		wrappedclaims := authentication.GetClaims(c)
-		claims := wrappedclaims.Claims
-		if claims.UserType != "seller" {
+		if claims.UserType != "admin" && claims.UserType != "seller" {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"status":  false,
 				"message": "invalid request. This endpoint is valid only for seller accounts.",
@@ -190,6 +212,44 @@ func ProductRouter(productRoutes *gin.RouterGroup, r *gin.Engine) bool {
 			return
 		}
 	})
+
+	productRoutes.POST("/rate", func(c *gin.Context) {
+		wrappedclaims := authentication.GetClaims(c)
+		claims := wrappedclaims.Claims
+		if claims.UserType != "admin" && claims.UserType != "seller" && claims.UserType != "buyer" {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  false,
+				"message": "invalid request. This endpoint is valid only for seller and buyer accounts.",
+			})
+			return
+		}
+		var b communication.RateProductRequest
+		err := c.BindJSON(&b)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  false,
+				"message": "invalid request",
+			})
+			return
+		}
+		message, httpstatus, status, product := database.RateProduct(b, claims)
+		if status {
+			c.JSON(httpstatus, gin.H{
+				"status":  status,
+				"message": message,
+				"product": product,
+			})
+			return
+		} else {
+			c.JSON(httpstatus, gin.H{
+				"status":  status,
+				"message": message,
+			})
+			return
+		}
+	})
+
 	return false
 }
 

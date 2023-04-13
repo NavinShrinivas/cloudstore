@@ -27,11 +27,16 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:5001",
+					"raw": "localhost:5001/api/account/status",
 					"host": [
 						"localhost"
 					],
-					"port": "5001"
+					"port": "5001",
+					"path": [
+						"api",
+						"account",
+						"status"
+					]
 				}
 			},
 			"response": []
@@ -43,7 +48,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"username\" : \"mj\",\r\n\t\"name\" : \"Mitul Joby\",\r\n\t\"email\" : \"mj@mj.com\" , \r\n\t\"phone\" : \"1234567890\"   ,\r\n\t\"password\": \"pass\",\r\n\t\"usertype\" : \"buyer\"\r\n}",
+					"raw": "{\r\n    \"username\": \"MitulJoby\",\r\n    \"name\": \"Mitul Joby\",\r\n    \"email\": \"mj@email.com\",\r\n    \"phone\": \"0000000000\",\r\n    \"password\": \"pass\",\r\n    \"usertype\": \"buyer\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

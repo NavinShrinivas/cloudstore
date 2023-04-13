@@ -5,38 +5,12 @@ import (
 	"os"
 	"products/communication"
 
-	"github.com/joho/godotenv"
 	log "github.com/urishabh12/colored_log"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 var db *gorm.DB
-
-func InitDatabaseVaraiables() {
-
-	envRequired := []string{"DATABASE_USERNAME", "DATABASE_PASSWORD", "DATABASE_HOST", "DATABASE_PORT", "DATABASE_NAME"}
-
-	_, err := os.Stat(".env")
-	if err == nil {
-		secret, err := godotenv.Read()
-		if err != nil {
-			log.Panic("Error reading .env file")
-		}
-
-		for _, key := range envRequired {
-			if secret[key] != "" {
-				os.Setenv(key, secret[key])
-			}
-		}
-	}
-
-	for _, key := range envRequired {
-		if os.Getenv(key) == "" {
-			log.Panic("Environment variable " + key + " not set")
-		}
-	}
-}
 
 func GetDatabaseConnection() (*gorm.DB, error) {
 
@@ -58,79 +32,6 @@ func GetDatabaseConnection() (*gorm.DB, error) {
 		db.AutoMigrate(&Product{})
 	}
 	return db, nil
-}
-
-func SetProduct(product_details communication.CreateProductRequest, claims communication.LoginClaims) (string, int, bool, uint) {
-	db_product_record := Product{
-		Name:           product_details.Name,
-		Limit:          product_details.Limit,
-		SellerUsername: claims.Username,
-		Price:          product_details.Price,
-		AvgRating:      0,
-		NumberOfRating: 0,
-		Manufacturer:   product_details.Manufacturer,
-	}
-	db, err := GetDatabaseConnection()
-	if err != nil {
-		return "Internal server error, please try again later.", http.StatusInternalServerError, false, 0
-	}
-	result := db.Create(&db_product_record)
-	if result.RowsAffected != 0 {
-		return "Product inserted succesfully", http.StatusOK, true, db_product_record.ID
-	} else {
-		return "Internal server error, please try again later.", http.StatusInternalServerError, false, 0
-	}
-}
-
-func EditProduct(product_details communication.EditProductRequest, claims communication.LoginClaims) (string, int, bool) {
-	db, err := GetDatabaseConnection()
-	if err != nil {
-		return "Internal server error, please try again later.", http.StatusInternalServerError, false
-	}
-	query_result := Product{}
-	db.First(&query_result, product_details.ID)
-	if query_result.ID != uint(product_details.ID) {
-		return "Product with this product ID not found.", http.StatusForbidden, false
-	} else {
-		if claims.Username != query_result.SellerUsername {
-			log.Println("[WARN] Someone trying to break the system, wrong seller trying to edit non owned product.")
-			return "You do not have permission to do this", http.StatusForbidden, false
-		}
-		query_result.Name = product_details.Name
-		query_result.Price = product_details.Price
-		query_result.Limit = product_details.Limit
-		query_result.Manufacturer = product_details.Manufacturer
-		result := db.Model(&query_result).Updates(query_result)
-		if result.RowsAffected == 0 {
-			return "Internal server error, please try again later", http.StatusInternalServerError, false
-		} else {
-			return "Updated product records succesfully", http.StatusOK, true
-		}
-	}
-}
-
-func DeleteProduct(product_details communication.DeleteProductRequest, claims communication.LoginClaims) (string, int, bool) {
-	db, err := GetDatabaseConnection()
-	if err != nil {
-		return "Internal server error, please try again later.", http.StatusInternalServerError, false
-	}
-	query_result := Product{}
-	db.First(&query_result, product_details.ID)
-	if query_result.ID != uint(product_details.ID) {
-		return "Product with this product ID not found.", http.StatusForbidden, false
-	} else {
-		if claims.Username != query_result.SellerUsername {
-			log.Println("[WARN] Someone trying to break the system, wrong seller trying to edit non owned product.")
-			return "You do not have permission to do this", http.StatusForbidden, false
-		}
-		query_result.ID = uint(product_details.ID)
-		result := db.Delete(&query_result)
-		if result.RowsAffected == 0 {
-			return "Internal server error, please try again later", http.StatusInternalServerError, false
-		} else {
-			return "Product record deleted", http.StatusOK, true
-		}
-	}
 }
 
 func GetAllProducts() (string, int, bool, []Product) {
@@ -160,4 +61,127 @@ func GetAllSellerProducts(claims communication.LoginClaims) (string, int, bool, 
 		return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
 	}
 	return "All products from this user", http.StatusOK, true, query_result
+}
+
+func GetProducts(ids []int) (string, int, bool, []Product) {
+	var query_result []Product
+	db, err := GetDatabaseConnection()
+	if err != nil {
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
+	}
+
+	for _, id := range ids {
+		product := Product{}
+		result := db.First(&product, id)
+		if result.Error != nil {
+			return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
+		}
+		query_result = append(query_result, product)
+	}
+	return "Products with given ids", http.StatusOK, true, query_result
+}
+
+func InsertProduct(product_details communication.CreateProductRequest, claims communication.LoginClaims) (string, int, bool, uint) {
+	db_product_record := Product{
+		Name:            product_details.Name,
+		Limit:           product_details.Limit,
+		SellerUsername:  claims.Username,
+		Price:           product_details.Price,
+		AvgRating:       0,
+		NumberOfRatings: 0,
+		Manufacturer:    product_details.Manufacturer,
+	}
+	db, err := GetDatabaseConnection()
+	if err != nil {
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false, 0
+	}
+	result := db.Create(&db_product_record)
+	if result.RowsAffected != 0 {
+		return "Product inserted succesfully", http.StatusOK, true, db_product_record.ID
+	} else {
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false, 0
+	}
+}
+
+func UpdateProduct(product_details communication.UpdateProductRequest, claims communication.LoginClaims) (string, int, bool, *Product) {
+	db, err := GetDatabaseConnection()
+	if err != nil {
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
+	}
+	query_result := Product{}
+	db.First(&query_result, product_details.ID)
+	if query_result.ID != uint(product_details.ID) {
+		return "Product with this product ID not found.", http.StatusForbidden, false, nil
+	} else {
+		if claims.Username != query_result.SellerUsername && claims.UserType != "admin" {
+			log.Println("[WARN] Someone trying to break the system, wrong seller trying to edit non owned product.")
+			return "You do not have permission to do this", http.StatusForbidden, false, nil
+		}
+		if product_details.Name != "" {
+			query_result.Name = product_details.Name
+		}
+		if product_details.Price != 0 {
+			query_result.Price = product_details.Price
+		}
+		if product_details.Limit != 0 {
+			query_result.Limit = product_details.Limit
+		}
+		if product_details.Manufacturer != "" {
+			query_result.Manufacturer = product_details.Manufacturer
+		}
+		result := db.Save(&query_result)
+		if result.RowsAffected != 0 {
+			return "Product updated succesfully", http.StatusOK, true, &query_result
+		} else {
+			return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
+		}
+	}
+}
+
+func DeleteProduct(product_details communication.DeleteProductRequest, claims communication.LoginClaims) (string, int, bool) {
+	db, err := GetDatabaseConnection()
+	if err != nil {
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false
+	}
+	query_result := Product{}
+	db.First(&query_result, product_details.ID)
+	if query_result.ID != uint(product_details.ID) {
+		return "Product with this product ID not found.", http.StatusForbidden, false
+	} else {
+		if claims.Username != query_result.SellerUsername {
+			log.Println("[WARN] Someone trying to break the system, wrong seller trying to edit non owned product.")
+			return "You do not have permission to do this", http.StatusForbidden, false
+		}
+		query_result.ID = uint(product_details.ID)
+		result := db.Delete(&query_result)
+		if result.RowsAffected == 0 {
+			return "Internal server error, please try again later", http.StatusInternalServerError, false
+		} else {
+			return "Product record deleted", http.StatusOK, true
+		}
+	}
+}
+
+func RateProduct(product_details communication.RateProductRequest, claims communication.LoginClaims) (string, int, bool, *Product) {
+	db, err := GetDatabaseConnection()
+	if err != nil {
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
+	}
+	query_result := Product{}
+	db.First(&query_result, product_details.ID)
+	if query_result.ID != uint(product_details.ID) {
+		return "Product with this product ID not found.", http.StatusForbidden, false, nil
+	} else {
+		if product_details.Rating < 1 || product_details.Rating > 5 {
+			return "Rating must be between 1 and 5", http.StatusBadRequest, false, nil
+		}
+		query_result.NumberOfRatings++
+		query_result.AvgRating = (query_result.AvgRating*float32(query_result.NumberOfRatings-1) + float32(product_details.Rating)) / float32(query_result.NumberOfRatings)
+		result := db.Model(&query_result).Updates(query_result)
+		if result.RowsAffected == 0 {
+			return "Internal server error, please try again later", http.StatusInternalServerError, false, nil
+		} else {
+			return "Rated product succesfully", http.StatusOK, true, &query_result
+		}
+	}
 }
