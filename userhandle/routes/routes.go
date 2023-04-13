@@ -12,6 +12,13 @@ import (
 
 func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 
+	accountRoutes.GET("/status", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  true,
+			"message": "User handle API is running",
+		})
+	})
+
 	accountRoutes.POST("/register", func(c *gin.Context) {
 		var new_user database.User
 		err := c.BindJSON(&new_user)
@@ -46,9 +53,6 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 		if status {
 			message, httpstatus, status, token, claims, lifeTime := authentication.GenerateAuthToken(*user_record)
 			if status {
-
-				c.Set("token", token)
-
 				c.SetCookie("token", token, lifeTime, "/", "localhost", false, true)
 				c.JSON(httpstatus, communication.LoginResponse{
 					Status:  status,
@@ -98,6 +102,43 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 		})
 	})
 
+	accountRoutes.GET("/info", func(c *gin.Context) {
+		claims := authentication.GetClaimsInfo(c)
+		if claims == nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  false,
+				"message": "invalid request",
+			})
+			return
+		}
+		user_query := database.User{
+			Username: claims["username"].(string),
+		}
+
+		if user_query.Username == "" {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  false,
+				"message": "invalid request",
+			})
+			return
+		}
+
+		status, user_record := database.GetUserRecord(user_query)
+		if !status {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  false,
+				"message": "invalid request",
+			})
+			return
+		}
+
+		c.JSON(http.StatusFound, gin.H{
+			"status":  true,
+			"message": "User record found",
+			"record":  user_record,
+		})
+	})
+
 	accountRoutes.PUT("/update", func(c *gin.Context) {
 		var UpdateUser communication.EditRequest
 		err := c.BindJSON(&UpdateUser)
@@ -118,6 +159,7 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 	})
 
 	accountRoutes.DELETE("/delete", func(c *gin.Context) {
+		c.SetCookie("token", "", -1, "/", "localhost", false, true)
 		var DeleteUser communication.DeleteRequest
 		err := c.BindJSON(&DeleteUser)
 		if err != nil {

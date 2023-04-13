@@ -4,7 +4,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-// -----Communication models----
+// -----Communication models-----
 
 type LoginClaims struct {
 	Name     string `json:"name"`
@@ -13,7 +13,6 @@ type LoginClaims struct {
 	// type : buyer|seller|admin
 	jwt.StandardClaims
 }
-
 type AuthResponse struct {
 	Status  bool        `json:"status"`
 	Message string      `json:"message"`

@@ -150,19 +150,27 @@ func CheckUserRecord(query_user communication.LoginRequest) (string, int, bool, 
 	}
 }
 
-func GetUserRecord(query_user User) (bool, *User) {
+func GetUserRecord(query_user User) (bool, *UserInfo) {
 	db, err := GetDatabaseConnection()
 	if err != nil {
 		return false, nil
 	}
 
 	var existing_user User
-	db.First(&existing_user, &User{Username: query_user.Username})
+	db.Select("name", "username", "email", "phone", "user_type", "address").First(&existing_user, &User{Username: query_user.Username})
+
+	user_info := UserInfo{
+		Name:     existing_user.Name,
+		Username: existing_user.Username,
+		Email:    existing_user.Email,
+		Phone:    existing_user.Phone,
+		UserType: existing_user.UserType,
+		Address:  existing_user.Address,
+	}
 
 	//Need to do this check even though we have primary key as gorm add's it own primary key 'Id' making our entire primary key compostie and non uniuqe
 	if existing_user.Username == query_user.Username {
-		existing_user.Password = ""
-		return true, &existing_user
+		return true, &user_info
 	} else {
 		return false, nil
 	}

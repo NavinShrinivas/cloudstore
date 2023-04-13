@@ -2,8 +2,10 @@ package database
 
 import (
 	"net/http"
+	"os"
 	"products/communication"
 
+	"github.com/joho/godotenv"
 	log "github.com/urishabh12/colored_log"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -11,9 +13,42 @@ import (
 
 var db *gorm.DB
 
+func InitDatabaseVaraiables() {
+
+	envRequired := []string{"DATABASE_USERNAME", "DATABASE_PASSWORD", "DATABASE_HOST", "DATABASE_PORT", "DATABASE_NAME"}
+
+	_, err := os.Stat(".env")
+	if err == nil {
+		secret, err := godotenv.Read()
+		if err != nil {
+			log.Panic("Error reading .env file")
+		}
+
+		for _, key := range envRequired {
+			if secret[key] != "" {
+				os.Setenv(key, secret[key])
+			}
+		}
+	}
+
+	for _, key := range envRequired {
+		if os.Getenv(key) == "" {
+			log.Panic("Environment variable " + key + " not set")
+		}
+	}
+}
+
 func GetDatabaseConnection() (*gorm.DB, error) {
-	dsn := "storeuser:pass1234@tcp(127.0.0.1:3306)/cloudstore?charset=utf8mb4&parseTime=True&loc=Local"
-	if db == nil { //If first time asking for database operations
+
+	databaseUsername := os.Getenv("DATABASE_USERNAME")
+	databasePassword := os.Getenv("DATABASE_PASSWORD")
+	databaseHost := os.Getenv("DATABASE_HOST")
+	databasePort := os.Getenv("DATABASE_PORT")
+	databaseName := os.Getenv("DATABASE_NAME")
+
+	dsn := databaseUsername + ":" + databasePassword + "@tcp(" + databaseHost + ":" + databasePort + ")/" + databaseName + "?charset=utf8mb4&parseTime=True&loc=Local"
+
+	if db == nil {
 		var err error
 		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 		if err != nil {
@@ -29,10 +64,10 @@ func SetProduct(product_details communication.CreateProductRequest, claims commu
 	db_product_record := Product{
 		Name:           product_details.Name,
 		Limit:          product_details.Limit,
-		Username:       claims.Username,
+		SellerUsername: claims.Username,
 		Price:          product_details.Price,
-		Avgrating:      0,
-		Numberofrating: 0,
+		AvgRating:      0,
+		NumberOfRating: 0,
 		Manufacturer:   product_details.Manufacturer,
 	}
 	db, err := GetDatabaseConnection()
@@ -57,9 +92,9 @@ func EditProduct(product_details communication.EditProductRequest, claims commun
 	if query_result.ID != uint(product_details.ID) {
 		return "Product with this product ID not found.", http.StatusForbidden, false
 	} else {
-		if claims.Username != query_result.Username {
-			return "You do not have permission to do this", http.StatusForbidden, false
+		if claims.Username != query_result.SellerUsername {
 			log.Println("[WARN] Someone trying to break the system, wrong seller trying to edit non owned product.")
+			return "You do not have permission to do this", http.StatusForbidden, false
 		}
 		query_result.Name = product_details.Name
 		query_result.Price = product_details.Price
@@ -84,9 +119,9 @@ func DeleteProduct(product_details communication.DeleteProductRequest, claims co
 	if query_result.ID != uint(product_details.ID) {
 		return "Product with this product ID not found.", http.StatusForbidden, false
 	} else {
-		if claims.Username != query_result.Username {
-			return "You do not have permission to do this", http.StatusForbidden, false
+		if claims.Username != query_result.SellerUsername {
 			log.Println("[WARN] Someone trying to break the system, wrong seller trying to edit non owned product.")
+			return "You do not have permission to do this", http.StatusForbidden, false
 		}
 		query_result.ID = uint(product_details.ID)
 		result := db.Delete(&query_result)
@@ -113,7 +148,7 @@ func GetAllProducts() (string, int, bool, []Product) {
 
 func GetAllSellerProducts(claims communication.LoginClaims) (string, int, bool, []Product) {
 	query_prod := Product{
-		Username: claims.Username,
+		SellerUsername: claims.Username,
 	}
 	var query_result []Product
 	db, err := GetDatabaseConnection()
