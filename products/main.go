@@ -2,33 +2,39 @@ package main
 
 import (
 	"net/http"
-	"products/authentication"
-	"products/database"
+	"os"
 	"products/routes"
+	"strings"
 	"time"
 
+	envLoader "products/envLoader"
+
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/urishabh12/colored_log"
 )
 
 func main() {
+
 	log.Println("Starting product services...")
+
+	envLoader.CheckAndSetVariables()
+
 	r := gin.Default()
-
-	authentication.InitAuthVariables()
-	database.InitDatabaseVaraiables()
-
+	config := cors.DefaultConfig()
+	config.AllowOrigins = strings.Split(os.Getenv("ALLOWED_ORIGINS"), ",")
+	config.AllowCredentials = true
+	r.Use(cors.New(config))
 	routes.RouteHandler(r)
 
 	s := &http.Server{
-		Addr:         ":5002",
+		Addr:         ":" + os.Getenv("PORT"),
 		Handler:      r,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		// MaxHeaderBytes: 1 << 20,
 	}
 
-	log.Println("Product handle services started.")
-	log.Println("Listening on port 5002.")
+	log.Println("Product services started and running at " + s.Addr)
 	s.ListenAndServe()
 }
