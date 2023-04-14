@@ -192,7 +192,7 @@ func RouteHandler(r *gin.Engine) {
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status":  true,
-			"message": "Product services are live.",
+			"message": "Order services are live.",
 		})
 	})
 
