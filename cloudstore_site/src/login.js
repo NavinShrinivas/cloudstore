@@ -8,7 +8,7 @@ function App(props) {
    const [username, setUsername] = useState("");
    const [password, setPassword] = useState("");
    const [isVisible, setIsVisiable] = useState(false);
-   const [isloggedin, setIsloggedin] = useState(false);
+   const [isloggedin, setIsloggedin] = useState(null);
    const [status, setStatus] = useState("")
    const navigate = useNavigate();
    const handleUsername = (event) => {
@@ -25,7 +25,7 @@ function App(props) {
       axios.post(url + "/api/account/login", {
          username: username,
          password: password
-      }).then(function(resp) {
+      }).then(function (resp) {
          setIsVisiable(false)
          if (resp.data.status === true) {
             console.log("Login Successfull!")
@@ -38,14 +38,14 @@ function App(props) {
             setIsVisiable(true)
          }
          console.log(resp)
-      }).catch(function(resp) {
+      }).catch(function (resp) {
          setStatus("Login failed, please chek your credentials!")
          setIsVisiable(true)
          console.log(resp)
       })
    }
    const checkLoggedIn = () => {
-      axios.get(url + "/api/account/authcheck", {}).then(function(resp) {
+      axios.get(url + "/api/account/authcheck", {}).then(function (resp) {
          console.log(resp)
          if (resp.data.status) {
             setIsloggedin(true)
@@ -53,13 +53,13 @@ function App(props) {
             setIsloggedin(false)
          }
          console.log("test1")
-      }).catch(function() {
+      }).catch(function () {
          console.log("test")
          setIsloggedin(false)
       })
    }
    const logout = () => {
-      axios.post(url + "/api/account/logout", {}).then(function(resp) {
+      axios.post(url + "/api/account/logout", {}).then(function (resp) {
          if (resp.data.status) {
             setIsloggedin(false)
             window.location.reload(true)
@@ -67,22 +67,26 @@ function App(props) {
             setIsloggedin(true)
          }
          console.log(resp.data.status)
-      }).catch(function() {
+      }).catch(function () {
          setIsloggedin(false)
       })
    }
    checkLoggedIn()
    return (
       <div >
-         <form hidden={isloggedin}>
-            Username : <input type="text" name="username" placeholder="Username" onChange={handleUsername} /><br />
-            Password : <input type="password" name="username" placeholder="Username" onChange={handlePassword} /> <br />
-            <p hidden={!isVisible}>{status}</p>
-            <Button onClick={handleLogin}>Login!</Button>
-         </form>
-         <div hidden={!isloggedin}>
-            <p> You are already logged in, to login as a different user click <a onClick={logout} style={{"text-decoration-line":"underline"}}> here</a>.</p>
-         </div>
+         {isloggedin === null ? <p> Loading </p> :
+            <>
+               <form hidden={isloggedin}>
+                  Username : <input type="text" name="username" placeholder="Username" onChange={handleUsername} /><br />
+                  Password : <input type="password" name="username" placeholder="Username" onChange={handlePassword} /> <br />
+                  <p hidden={!isVisible}>{status}</p>
+                  <Button onClick={handleLogin}>Login!</Button>
+               </form>
+               <div hidden={!isloggedin}>
+                  <p> You are already logged in, to login as a different user click <a onClick={logout} style={{ "text-decoration-line": "underline" }}> here</a>.</p>
+               </div>
+            </>
+         }
       </div>
    );
 }

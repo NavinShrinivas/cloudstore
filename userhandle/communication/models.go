@@ -25,9 +25,17 @@ type LoginResponse struct {
 }
 
 type EditRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Address  string `json:"address"`
+	Username string `json:"username"` // compulsory
+	Password string `json:"password"` // compulsory
+	// Optional fields
+	NewUsername string `json:"newusername"`
+	NewPassword string `json:"newpassword"`
+	NewName     string `json:"newname"`
+	NewEmail    string `json:"newemail"`
+	NewPhone    string `json:"newphone"`
+	NewAddress  string `json:"newaddress"`
+	NewUserType string `json:"newusertype"`
+	// type : buyer|seller|admin
 }
 
 type DeleteRequest struct {
