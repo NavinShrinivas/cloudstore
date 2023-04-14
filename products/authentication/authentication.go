@@ -9,42 +9,13 @@ import (
 	"products/communication"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
-//Need to call the userhandle server for auth and should return back the user claims
-
-func InitAuthVariables() {
-
-	envRequired := []string{"USERHANDLE_ADDRESS"}
-
-	_, err := os.Stat(".env")
-	if err == nil {
-		secret, err := godotenv.Read()
-		if err != nil {
-			log.Panic("Error reading .env file")
-		}
-
-		for _, key := range envRequired {
-			if secret[key] != "" {
-				os.Setenv(key, secret[key])
-			}
-		}
-	}
-
-	for _, key := range envRequired {
-		if os.Getenv(key) == "" {
-			log.Panic("Environment variable " + key + " not set")
-		}
-	}
-}
-
+// Need to call the userhandle server for auth and should return back the user claims
 func CheckUserAuthMiddleware(c *gin.Context) {
 
-	userhandle_address := os.Getenv("USERHANDLE_ADDRESS")
-
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "http://"+userhandle_address+"/authcheck", nil)
+	req, _ := http.NewRequest("GET", os.Getenv("USERHANDLE_ADDRESS")+"/api/account/authcheck", nil)
 
 	token, err := c.Cookie("token")
 	if err != nil {
@@ -82,10 +53,8 @@ func CheckUserAuthMiddleware(c *gin.Context) {
 
 func GetClaims(c *gin.Context) *communication.AuthResponse {
 
-	userhandle_address := os.Getenv("USERHANDLE_ADDRESS")
-
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "http://"+userhandle_address+"/authcheck", nil)
+	req, _ := http.NewRequest("GET", os.Getenv("USERHANDLE_ADDRESS")+"/api/account/authcheck", nil)
 
 	token, err := c.Cookie("token")
 	if err != nil {

@@ -17,6 +17,10 @@ type AuthResponse struct {
 	Claims  LoginClaims `json:"claims"`
 }
 
+type FetchProductsRequest struct {
+	IDs []int `json:"ids"`
+}
+
 type CreateProductRequest struct {
 	Name         string  `json:"name"`
 	Price        float32 `json:"price"`
@@ -24,7 +28,7 @@ type CreateProductRequest struct {
 	Manufacturer string  `json:"manufacturer"`
 }
 
-type EditProductRequest struct {
+type UpdateProductRequest struct {
 	ID           int     `json:"id"`
 	Name         string  `json:"name"`
 	Price        float32 `json:"price"`
@@ -34,4 +38,9 @@ type EditProductRequest struct {
 
 type DeleteProductRequest struct {
 	ID int `json:"id"`
+}
+
+type RateProductRequest struct {
+	ID     int `json:"id"`
+	Rating int `json:"rating"`
 }

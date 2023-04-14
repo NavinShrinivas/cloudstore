@@ -151,10 +151,11 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 			return
 		}
 		claims := authentication.GetClaimsInfo(c)
-		message, httpstatus, status := database.UpdateUserRecord(UpdateUser, claims)
+		message, httpstatus, status, user_record := database.UpdateUserRecord(UpdateUser, claims)
 		c.JSON(httpstatus, gin.H{
 			"status":  status,
 			"message": message,
+			"record":  user_record,
 		})
 	})
 
