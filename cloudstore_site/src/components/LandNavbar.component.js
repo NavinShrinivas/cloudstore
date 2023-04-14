@@ -13,7 +13,7 @@ function LandNavbar() {
                         <img
                             src={CloudstoreLogo}
                             height="30"
-                            className="d-inline-block align-top d-none d-lg-block"
+                            className="mx-2 d-inline-block align-top d-none d-lg-block"
                             alt="Cloudstore logo"
                         />
                     </Navbar.Collapse>
