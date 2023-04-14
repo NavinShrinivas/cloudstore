@@ -7,8 +7,7 @@ function LogoutButton() {
 
     const logoutRequest = async (e) => {
         e.preventDefault();
-        const url = "http://localhost:5001"
-        await axios.post(url + "/api/account/logout", {}).then((response) => {
+        await axios.post("/api/account/logout", {}).then((response) => {
             dispatch(logout())
             window.location.href = "/"
         }).catch((error) => {

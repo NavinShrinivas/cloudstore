@@ -16,8 +16,7 @@ function LoginCard() {
         e.preventDefault();
 
         axios.defaults.withCredentials = true //NOTE : This is very important to be able to set cookies 
-        const url = "http://localhost:5001"
-        await axios.post(url + "/api/account/login", {
+        await axios.post("/api/account/login", {
             username: loggedin.username,
             password: loggedin.password
         }).then(async (res) => {

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useSelector } from 'react-redux'
+// import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react';
 
 import Button from 'react-bootstrap/Button';
@@ -10,11 +10,10 @@ import { HomeNavbar, FilterSidebar } from '../components'
 function BuyerHomePage() {
 
 
-    const [user, setUser] = useState(useSelector((state) => state.user.value))
-    const loginurl = "http://localhost:5001"
-    const produrl = "http://localhost:5002"
+    // const [user, setUser] = useState(useSelector((state) => state.user.value))
 
     const [data, setData] = useState([])
+    // eslint-disable-next-line
     const [order, setOrder] = useState([])
 
     axios.defaults.withCredentials = true //NOTE : This is very important to be able to set cookies 
@@ -31,7 +30,7 @@ function BuyerHomePage() {
     }
 
     const getproducts = () => {
-        axios.get(produrl + "/api/products/all", {}).then(function (resp) {
+        axios.get("/api/products/all", {}).then(function (resp) {
             setData(resp.data.products)
         })
     }

@@ -5,7 +5,7 @@ import { BuyerHomePage, SellerHomePage } from './'
 
 function HomePage() {
 
-
+    // eslint-disable-next-line
     const [user, setUser] = useState(useSelector((state) => state.user.value))
 
     return (

@@ -1,12 +1,11 @@
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
+// import { useState } from 'react'
+// import { useSelector } from 'react-redux'
 
 import { HomeNavbar } from '../components'
 
 function SellerHomePage() {
 
-
-    const [user, setUser] = useState(useSelector((state) => state.user.value))
+    // const [user, setUser] = useState(useSelector((state) => state.user.value))
 
     return (
         <>

@@ -22,11 +22,11 @@ function App() {
 
     const checkLoginStatus = async () => {
         try {
-            axios.defaults.withCredentials = true //NOTE : This is very important to be able to set cookies
-            const url = "http://localhost:5001"
-            const response = await axios.get(url + "/api/account/authcheck")
+            axios.defaults.withCredentials = true
+            //NOTE : This is very important to be able to set cookies
+            const response = await axios.get("/api/account/authcheck")
             if (response.data && response.data.status) {
-                const user = await axios.get(url + "/api/account/info")
+                const user = await axios.get("/api/account/info")
                 if (user.data && user.data.status) {
                     dispatch(login(user.data.record))
                 } else {
@@ -42,7 +42,8 @@ function App() {
 
     useEffect(() => {
         checkLoginStatus()
-    })
+        // eslint-disable-next-line
+    }, [])
 
     return (
         <Router>
