@@ -13,8 +13,21 @@ type LoginClaims struct {
 	// type : buyer|seller|admin
 	jwt.StandardClaims
 }
+
 type AuthResponse struct {
 	Status  bool        `json:"status"`
 	Message string      `json:"message"`
 	Claims  LoginClaims `json:"claims"`
+}
+
+type GetOrderRequest struct {
+}
+
+type CreateOrderRequest struct {
+}
+
+type UpdateOrderRequest struct {
+}
+
+type DeleteOrderRequest struct {
 }
