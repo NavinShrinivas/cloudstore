@@ -22,6 +22,7 @@ type LoginResponse struct {
 	Status  bool        `json:"status"`
 	Message string      `json:"message"`
 	Claims  LoginClaims `json:"Claims"`
+	User    UserInfo    `json:"user"`
 }
 
 type EditRequest struct {
@@ -41,4 +42,13 @@ type EditRequest struct {
 type DeleteRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+type UserInfo struct {
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Phone    string `json:"phone"`
+	UserType string `json:"usertype"`
+	Address  string `json:"address"`
 }

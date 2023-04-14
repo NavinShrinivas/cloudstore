@@ -7,11 +7,8 @@ import (
 	"strings"
 	"time"
 
-<<<<<<< HEAD
-=======
 	envLoader "products/envLoader"
 
->>>>>>> d36864c9dcef24a31fa4c751e153cd1e7690570b
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/urishabh12/colored_log"
@@ -25,18 +22,9 @@ func main() {
 
 	r := gin.Default()
 	config := cors.DefaultConfig()
-<<<<<<< HEAD
-	config.AllowOrigins = []string{"http://localhost:3000"}
-	authentication.InitAuthVariables()
-	database.InitDatabaseVaraiables()
-	config.AllowCredentials = true
-	r.Use(cors.New(config))
-
-=======
 	config.AllowOrigins = strings.Split(os.Getenv("ALLOWED_ORIGINS"), ",")
 	config.AllowCredentials = true
 	r.Use(cors.New(config))
->>>>>>> d36864c9dcef24a31fa4c751e153cd1e7690570b
 	routes.RouteHandler(r)
 
 	s := &http.Server{

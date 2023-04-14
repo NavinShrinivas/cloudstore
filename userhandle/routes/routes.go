@@ -58,6 +58,14 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 					Status:  status,
 					Message: message,
 					Claims:  *claims,
+					User: communication.UserInfo{
+						Name:     user_record.Name,
+						Username: user_record.Username,
+						Email:    user_record.Email,
+						Phone:    user_record.Phone,
+						UserType: user_record.UserType,
+						Address:  user_record.Address,
+					},
 				})
 
 			} else {
@@ -132,7 +140,7 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 			return
 		}
 
-		c.JSON(http.StatusFound, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"status":  true,
 			"message": "User record found",
 			"record":  user_record,
