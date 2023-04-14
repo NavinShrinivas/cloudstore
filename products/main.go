@@ -7,6 +7,7 @@ import (
 	"products/routes"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/urishabh12/colored_log"
 )
@@ -14,9 +15,12 @@ import (
 func main() {
 	log.Println("Starting product services...")
 	r := gin.Default()
-
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"}
 	authentication.InitAuthVariables()
 	database.InitDatabaseVaraiables()
+	config.AllowCredentials = true
+	r.Use(cors.New(config))
 
 	routes.RouteHandler(r)
 
