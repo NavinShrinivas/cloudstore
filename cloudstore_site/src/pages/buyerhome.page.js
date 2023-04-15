@@ -5,8 +5,6 @@ import { useState, useEffect } from 'react';
 import { HomeNavbar, ProductCard, FilterSidebar } from '../components'
 
 function BuyerHomePage() {
-
-
     // const [user, setUser] = useState(useSelector((state) => state.user.value))
 
     const [filter, setFilter] = useState({
@@ -19,26 +17,27 @@ function BuyerHomePage() {
 
     const [products, setProducts] = useState([])
     const [productsData, setProductsData] = useState([])
-    // eslint-disable-next-line
-    const [order, setOrder] = useState([])
-    const [sellers, setSellers] = useState(new Set())
-    const [manufacturers, setManufacturers] = useState(new Set())
 
-    axios.defaults.withCredentials = true //NOTE : This is very important to be able to set cookies 
+    // eslint-disable-next-line
+    const [order, setorder] = useState([])
+    // eslint-disable-next-line
+    const [sellers, setsellers] = useState(new Set())
+    // eslint-disable-next-line
+    const [manufacturers, setmanufacturers] = useState(new Set())
 
     useEffect(() => {
         getproducts()
+        // eslint-disable-next-line
     }, [])
 
     useEffect(() => {
-        console.log(filter)
         setProducts(productsData.filter((product) => {
             return product.name.toLowerCase().includes(filter.search.toLowerCase()) &&
                 parseInt(product.price) >= parseInt(filter.price[0]) &&
                 (filter.price[1] === Infinity || parseInt(filter.price[1]) === 0 ? true : parseInt(product.price) <= parseInt(filter.price[1])) &&
                 parseInt(product.avg_rating) >= parseInt(filter.ratings) &&
-                (filter.seller.length === 0 || filter.seller.includes(product.seller_username) &&
-                    (filter.manufacturer.length === 0 || filter.manufacturer.includes(product.manufacturer)))
+                (filter.seller.length === 0 || filter.seller.includes(product.seller_username)) &&
+                (filter.manufacturer.length === 0 || filter.manufacturer.includes(product.manufacturer))
         }))
     }, [filter, productsData])
 
@@ -47,6 +46,8 @@ function BuyerHomePage() {
         // li_order.push(event.target.value)
         console.log(order)
     }
+
+    axios.defaults.withCredentials = true //NOTE : This is very important to be able to set cookies 
 
     const getproducts = () => {
         axios.get("/api/products/all", {}).then(function (resp) {
