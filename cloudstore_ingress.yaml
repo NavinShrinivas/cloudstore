@@ -2,8 +2,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: cloudstore-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - http:
@@ -15,3 +13,10 @@ spec:
               name: userhandle-service
               port:
                 number: 5001
+        - path: /api/products
+          pathType: Prefix
+          backend:
+            service:
+              name: products-service
+              port:
+                number: 5002
