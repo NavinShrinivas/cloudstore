@@ -36,7 +36,7 @@ function BuyerHomePage() {
     }
     return (
         <>
-            <div className="home-page" style={{ backgroundColor: '#f5f5f5', height: '100vh', overflow: 'hidden' }}>
+            <div className="home-page" style={{ backgroundColor: '#f5f5f5', overflow: 'hidden' }}>
                 <HomeNavbar />
                 <div className="mx-4" style={{ marginTop: '70px' }}>
 
@@ -49,7 +49,7 @@ function BuyerHomePage() {
                                 {
                                     data.map(user => {
                                         return (
-                                            <Card style={{ minWidth: '8rem', margin: '1rem' }}>
+                                            <Card style={{ width: '20rem', margin: '1rem' }}>
                                                 <Card.Body>
                                                     <Card.Title>{user.name}</Card.Title>
                                                     <Card.Text>
