@@ -1,6 +1,6 @@
 module orders
 
-go 1.20
+go 1.19
 
 require (
 	github.com/gin-contrib/cors v1.4.0
