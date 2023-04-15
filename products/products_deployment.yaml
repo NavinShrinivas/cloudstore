@@ -28,7 +28,7 @@ spec:
           - name: ALLOWED_ORIGINS
             value: "http://localhost:3000"
           - name: USERHANDLE_ADDRESS
-            value: "http://localhost:5001"
+            value: "http://userhandle-service.default.svc.cluster.local:5001"
           - name: DATABASE_NAME
             value: "cloudstore"
           - name: DATABASE_HOST
