@@ -2,32 +2,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: products
+  name: orders 
   labels:
-    app: products 
+    app: orders  
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: products 
+      app: orders 
   template:
     metadata:
       labels:
-        app: products 
+        app: orders 
     spec:
       containers:
-        - name: products 
-          image: navinshrinivas/cloudstore_product
+        - name: orders 
+          image: navinshrinivas/cloudstore_orders 
           ports:
-          - containerPort: 5002
+          - containerPort: 5003 
           imagePullPolicy: Always
           env:
           - name: ENVIRONMENT
             value: "development"
           - name: PORT
-            value: "5002"
+            value: "5003"
           - name: ALLOWED_ORIGINS
-            value: "http://localhost:3000"
+            value: "http://localhost:3000,http://localhost:5002"
           - name: USERHANDLE_ADDRESS
             value: "http://localhost:5001"
           - name: DATABASE_NAME
@@ -44,11 +44,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: products-service
+  name: orders-service 
 spec:
   selector:
-    app: products
+    app: orders 
   ports:
-  - port: 5002
-    targetPort: 5002 
+  - port: 5003 
+    targetPort: 5003  
   type: LoadBalancer
