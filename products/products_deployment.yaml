@@ -18,7 +18,7 @@ spec:
         - name: products 
           image: navinshrinivas/cloudstore_product
           ports:
-          - containerPort: 5001
+          - containerPort: 5002
           imagePullPolicy: Always
           env:
           - name: ENVIRONMENT
