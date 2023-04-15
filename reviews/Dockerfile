@@ -6,4 +6,4 @@ COPY . /reviews/
 WORKDIR /reviews
 RUN go mod tidy
 CMD ["go","run","."]
-EXPOSE 5003
+EXPOSE 5004

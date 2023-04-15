@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: orders 
+  name: reviews
   labels:
-    app: orders  
+    app: reviews   
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: orders 
+      app: reviews  
   template:
     metadata:
       labels:
-        app: orders 
+        app: reviews  
     spec:
       containers:
-        - name: orders 
-          image: navinshrinivas/cloudstore_orders 
+        - name: reviews 
+          image: navinshrinivas/cloudstore_reviews 
           ports:
-          - containerPort: 5003 
+          - containerPort: 5004 
           imagePullPolicy: Always
           env:
           - name: ENVIRONMENT
             value: "development"
           - name: PORT
-            value: "5003"
+            value: "5004"
           - name: ALLOWED_ORIGINS
-            value: "http://localhost:3000,http://localhost:5002"
+            value: "http://localhost:3000,http://localhost:5002,http://localhost:5003"
           - name: USERHANDLE_ADDRESS
             value: "http://localhost:5001"
           - name: DATABASE_NAME
@@ -43,11 +43,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: orders-service 
+  name: reviews-service 
 spec:
   selector:
-    app: orders 
+    app: reviews 
   ports:
-  - port: 5003 
-    targetPort: 5003  
+  - port: 5004 
+    targetPort: 5004 
   type: LoadBalancer
