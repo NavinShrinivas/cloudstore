@@ -20,14 +20,17 @@ type AuthResponse struct {
 	Claims  LoginClaims `json:"claims"`
 }
 
-type GetOrderRequest struct {
+type GetReviewRequest struct {
 }
 
-type CreateOrderRequest struct {
+type GetReviewsRequest struct {
 }
 
-type UpdateOrderRequest struct {
+type CreateReviewRequest struct {
 }
 
-type DeleteOrderRequest struct {
+type UpdateReviewRequest struct {
+}
+
+type DeleteReviewRequest struct {
 }

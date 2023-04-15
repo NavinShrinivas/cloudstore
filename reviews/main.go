@@ -3,11 +3,11 @@ package main
 import (
 	"net/http"
 	"os"
-	"products/routes"
+	"reviews/routes"
 	"strings"
 	"time"
 
-	envLoader "products/envLoader"
+	envLoader "reviews/envLoader"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -16,7 +16,7 @@ import (
 
 func main() {
 
-	log.Println("Starting product services...")
+	log.Println("Starting review services...")
 
 	envLoader.CheckAndSetVariables()
 
@@ -35,6 +35,6 @@ func main() {
 		// MaxHeaderBytes: 1 << 20,
 	}
 
-	log.Println("Product services started and running at " + s.Addr)
+	log.Println("Review services started and running at " + s.Addr)
 	s.ListenAndServe()
 }

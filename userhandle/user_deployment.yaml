@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userhandle
+  labels:
+    app: userhandle
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: userhandle
+  template:
+    metadata:
+      labels:
+        app: userhandle
+    spec:
+      containers:
+        - name: userhandle
+          image: navinshrinivas/cloudstore_userhandle
+          ports:
+          - containerPort: 5001
+          imagePullPolicy: Always
+          env:
+          - name: ENVIRONMENT
+            value: "development"
+          - name: PORT
+            value: "5001"
+          - name: ALLOWED_ORIGINS
+            value: "http://localhost:3000,http://localhost:5002"
+          - name: JWT_SECRET
+            value: "helloworld"
+          - name: JWT_LIFETIME
+            value: "15000"
+          - name: DATABASE_NAME
+            value: "cloudstore"
+          - name: DATABASE_HOST
+            value: "test.mysql.database.azure.com"
+          - name: DATABASE_PORT
+            value: "3306"
+          - name: DATABASE_USERNAME
+            value: "cloudadmin"
+          - name: DATABASE_PASSWORD
+            value: "!Admin123"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: userhandle-service
+spec:
+  selector:
+    app: userhandle
+  ports:
+  - port: 5001
+    targetPort: 5001
+  type: LoadBalancer

@@ -5,8 +5,8 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"orders/communication"
 	"os"
+	"reviews/communication"
 
 	"github.com/gin-gonic/gin"
 )

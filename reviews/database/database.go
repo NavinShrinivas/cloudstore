@@ -1,8 +1,8 @@
 package database
 
 import (
-	"orders/communication"
 	"os"
+	"reviews/communication"
 
 	log "github.com/urishabh12/colored_log"
 	"gorm.io/driver/mysql"
@@ -28,33 +28,32 @@ func GetDatabaseConnection() (*gorm.DB, error) {
 			log.Panic("Error creating a connection to databse!", err)
 			return nil, err
 		}
-		db.AutoMigrate(&Order_Key{}, &Order_Item{})
+		db.AutoMigrate(&Review{})
 	}
 	return db, nil
 }
 
-func GetOrder(order_id string, claims communication.LoginClaims) (string, int, bool, Order_Key) {
-	// check if the order belongs to the user (ie the user is the buyer or the seller) or the user is an admin
-
+func GetReview(review_id string, claims communication.LoginClaims) (string, int, bool, Review_Key) {
+	// check if the review belongs to the user (ie the user is the buyer or the seller) or the user is an admin
 }
 
-func GetAllOrders(claims communication.LoginClaims) (string, int, bool, []Order_Key) {
+func GetAllReviews(claims communication.LoginClaims) (string, int, bool, []Review_Key) {
 	if claims.UserType == "buyer" {
-		// Get all orders of the buyer
+		// Get all reviews of the buyer
 	} else if claims.UserType == "seller" {
-		// Get all orders of the seller
+		// Get all reviews of the seller
 	} else if claims.UserType == "admin" {
-		// Get all orders of all users
+		// Get all reviews of all users
 	} else {
 		// Invalid request
 	}
 }
 
-func InsertOrder(orderDetails communication.CreateOrderRequest, claims communication.LoginClaims) (string, int, bool, Order_Key) {
+func InsertReview(reviewDetails communication.CreateReviewRequest, claims communication.LoginClaims) (string, int, bool, Review_Key) {
 }
 
-func UpdateOrder(orderDetails communication.UpdateOrderRequest, claims communication.LoginClaims) (string, int, bool, Order_Key) {
+func UpdateReview(reviewDetails communication.UpdateReviewRequest, claims communication.LoginClaims) (string, int, bool, Review_Key) {
 }
 
-func DeleteOrder(orderDetails communication.DeleteOrderRequest, claims communication.LoginClaims) (string, int, bool, Order_Key) {
+func DeleteReview(reviewDetails communication.DeleteReviewRequest, claims communication.LoginClaims) (string, int, bool, Review_Key) {
 }
