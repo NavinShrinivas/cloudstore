@@ -3,6 +3,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 
 import { LogoutButton } from "../components";
+import { ProfileButton } from "../components";
 
 import CloudstoreLogo from '../static/cloudstore-logo.png';
 
@@ -25,9 +26,9 @@ function HomeNavbar() {
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
-                    <Nav >
-                        {/* add necessary */}
-                    </Nav>
+                    <Nav.Link href="profile">
+                        <div className="btn btn-outline-light mx-2" >Profile</div>
+                    </Nav.Link>
                 </Navbar.Collapse>
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
