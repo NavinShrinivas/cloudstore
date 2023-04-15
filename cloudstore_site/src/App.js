@@ -9,7 +9,7 @@ import { login, logout } from './redux/features/userSlice'
 import { HomePage, LandPage, LoginPage, RegisterPage, ProfilePage } from "./pages";
 
 const ProtectedRoute = () => {
-    const loggedIn = useSelector((state) => state.user.value)
+    const loggedIn = useSelector((state) => state.user.loggedin)
     if (loggedIn == null) {
         return <Loading />
     }
