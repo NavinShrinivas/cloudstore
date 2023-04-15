@@ -24,15 +24,16 @@ function HomeNavbar() {
                         <h3 className="m-0">Cloudstore</h3>
                     </div>
                 </Navbar.Brand>
-                <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-                <Navbar.Collapse id="responsive-navbar-nav">
-                    <Nav.Link href="profile">
-                        <div className="btn btn-outline-light mx-2" >Profile</div>
-                    </Nav.Link>
-                </Navbar.Collapse>
+
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
                     </Nav>
+                    <Nav.Link href="/profile">
+                        <div className="btn btn-outline-light mx-2" >Profile</div>
+                    </Nav.Link>
+                    <Nav.Link href="/">
+                        <div className="btn btn-outline-light mx-2" >Home</div>
+                    </Nav.Link>
                     <div className="d-flex justify-content-around">
                         <LogoutButton />
                     </div>
