@@ -58,6 +58,7 @@ func ProductRouter(productRoutes *gin.RouterGroup, r *gin.Engine) bool {
 				"status":   status,
 				"message":  message,
 				"products": products,
+            "ids" : b.IDs,
 			})
 			return
 		} else {

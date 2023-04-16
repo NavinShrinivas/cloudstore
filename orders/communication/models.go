@@ -21,9 +21,11 @@ type AuthResponse struct {
 }
 
 type GetOrderRequest struct {
+	Order_id int32 `json:"order_id"`
 }
 
 type CreateOrderRequest struct {
+	IDs []string `json:"ids"`
 }
 
 type UpdateOrderRequest struct {
@@ -31,3 +33,7 @@ type UpdateOrderRequest struct {
 
 type DeleteOrderRequest struct {
 }
+
+// type CartFetchRequest struct{
+//    Product_ids  []string `json:"product_ids"`
+// }
