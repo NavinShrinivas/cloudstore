@@ -6,5 +6,6 @@ import RegisterCard from "./RegisterCard.component";
 import LogoutButton from "./LogoutButton.component";
 import ProductCard from "./ProductCard.component";
 import FilterSidebar from "./FilterSiderbar.component";
+import OrderSidebar from "./OrderSidebar.component";
 
-export { Loading, HomeNavbar, LandNavbar, LoginCard, RegisterCard, LogoutButton, ProductCard, FilterSidebar };
+export { Loading, HomeNavbar, LandNavbar, LoginCard, RegisterCard, LogoutButton, ProductCard, FilterSidebar, OrderSidebar };
