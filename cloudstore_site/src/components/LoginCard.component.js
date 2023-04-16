@@ -20,7 +20,6 @@ function LoginCard() {
             username: loggedin.username,
             password: loggedin.password
         }).then(async (res) => {
-            console.log(res);
             if (res.data.status) {
                 dispatch(login(res.data.user));
                 setErrorMessage(null);

@@ -5,6 +5,7 @@ export const userSlice = createSlice({
     initialState: {
         loggedin: null,
         value: null,
+        cart: []
     },
     reducers: {
         login: (state, action) => {
@@ -14,10 +15,16 @@ export const userSlice = createSlice({
         logout: (state) => {
             state.value = null
             state.loggedin = false
-        }
+        },
+        clearCart: (state, action) => {
+            state.cart = null
+        },
+        updateCart: (state, action) => {
+            state.cart = action.payload
+        },
     },
 })
 
-export const { login, logout } = userSlice.actions
+export const { login, logout, updateCart, clearCart } = userSlice.actions
 
 export default userSlice.reducer
