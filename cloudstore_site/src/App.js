@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-
 
 import { Loading } from "./components";
 import { login, logout } from './redux/features/userSlice'
-import { HomePage, LandPage, LoginPage, RegisterPage, ProfilePage, EditProfile, CartPage } from "./pages";
+import { HomePage, LandPage, LoginPage, RegisterPage, ProfilePage, EditProfile, CartPage, OrderPage } from "./pages";
 
 const ProtectedRoute = () => {
     const loggedIn = useSelector((state) => state.user.loggedin)
@@ -56,6 +56,7 @@ function App() {
                     <Route exact path="/profile" element={<ProfilePage />} />
                     <Route exact path="/editprofile" element={<EditProfile />} />
                     <Route exact path="/cart" element={<CartPage />} />
+                    <Route exact path="/order" element={<OrderPage />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" />} />

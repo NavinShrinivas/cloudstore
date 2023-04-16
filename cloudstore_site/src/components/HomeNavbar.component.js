@@ -34,6 +34,9 @@ function HomeNavbar() {
                     <Nav.Link href="/">
                         <div className="btn btn-outline-light mx-2" >Home</div>
                     </Nav.Link>
+                    <Nav.Link href="/order">
+                        <div className="btn btn-outline-light mx-2" >Orders</div>
+                    </Nav.Link>
                     <div className="d-flex justify-content-around">
                         <LogoutButton />
                     </div>
