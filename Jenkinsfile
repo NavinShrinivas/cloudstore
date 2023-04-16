@@ -9,7 +9,7 @@ pipeline {
         }
         stage("build"){
             steps{
-               sh 'docker login'
+               sh 'docker login -u navinshrinivas -p kakana071129'
                sh 'docker build ./userhandle/ -t  navinshrinivas/cloudstore_userhandle'
                sh 'docker push navinshrinivas/userhandle'
                sh 'docker build ./products/ -t navinshrinivas/products'
