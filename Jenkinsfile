@@ -18,6 +18,7 @@ pipeline {
         stage("deploy"){
             steps{
             //Assuming minikube to be running
+               sh 'kubectl config set-cluster minikube'
                sh 'kubectl apply -f ./userhandle/user_deployment.yaml'
                sh 'kubectl rollout restart deployment userhandle'
 
