@@ -36,10 +36,38 @@ func GetDatabaseConnection() (*gorm.DB, error) {
 	return db, nil
 }
 
-// func GetOrder(order_id string, claims communication.LoginClaims) (string, int, bool, Order_Key) {
-// 	// check if the order belongs to the user (ie the user is the buyer or the seller) or the user is an admin
-//
-// }
+func GetOrder(request communication.GetOrderRequest, claims communication.LoginClaims) (string, int, bool, *communication.Order) {
+	db, err := GetDatabaseConnection()
+	if err != nil {
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
+	}
+	query_order := Order_Key{Order_Id: request.Order_id}
+	order_info := Order_Key{}
+	result := db.Preload("Order_Items").Find(&order_info, &query_order)
+	if order_info.User_id != claims.Username {
+		return "Invalid Request!", http.StatusBadRequest, false, nil
+	}
+	if result.Error != nil {
+		return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
+	} else {
+		order := communication.Order{Order_Id: order_info.Order_Id, User_id: order_info.User_id}
+		for _, v := range order_info.Order_Items {
+			details := communication.GetProductDetails(v.Product_Id)
+			if details == nil {
+				return "Invalid Request!", http.StatusBadRequest, false, nil
+			} else {
+				item := communication.Item{
+					Product_Id: v.Product_Id,
+					Order_Id:   v.Order_Id,
+					Rating:     v.Rating,
+					Details:    *details,
+				}
+				order.Items = append(order.Items, item)
+			}
+		}
+		return "Found Order!", http.StatusOK, true, &order
+	}
+}
 
 func GetAllOrders(claims communication.LoginClaims) (string, int, bool, []Order_Key) {
 
@@ -50,14 +78,34 @@ func GetAllOrders(claims communication.LoginClaims) (string, int, bool, []Order_
 	if claims.UserType == "buyer" {
 		// Get all orders of the buyer
 		var all_order []Order_Key
-      result := db.Preload("Order_Items").Find(&all_order,&Order_Key{User_id:claims.Username})
+		result := db.Preload("Order_Items").Find(&all_order, &Order_Key{User_id: claims.Username})
 		if result.Error != nil {
 			return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
 		}
 		return "Orders found!", http.StatusOK, true, all_order
 	} else if claims.UserType == "seller" {
-		//[TODO] this request will span to products micro service as well
-		// Get all orders of the seller
+		//[TODO] this request will span to products micro service as well [DONE]
+      //[TODO] This is by far the most unoptimised code block in this project!! please refactor if u ever can!
+		var all_order []Order_Key
+		var seller_order []Order_Key
+		result := db.Preload("Order_Items").Find(&all_order)
+		if result.Error != nil {
+			return "Internal server error, please try again later.", http.StatusInternalServerError, false, nil
+		}
+		for _, v := range all_order {
+			for _, vi := range v.Order_Items {
+				details := communication.GetProductDetails(vi.Product_Id)
+				if details != nil && details.Seller == claims.Username {
+					seller_order = append(seller_order, v)
+               //If one of the items is sellers we can move on, 
+               //we dont want the same order to show up many times cus many of sellers products
+               break
+				} else if details == nil{
+					return "Invalid Request!", http.StatusBadRequest, false, nil
+				}
+			}
+		}
+		return "Found all seller orders!", http.StatusOK, true, seller_order
 	} else if claims.UserType == "admin" {
 		var all_order []Order_Key
 		result := db.Preload("Order_Items").Find(&all_order)
