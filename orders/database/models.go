@@ -2,7 +2,7 @@ package database
 
 type Order_Item struct {
 	Order_Id   int `json:"orderid"`
-	Product_Id string    `json:"productid"`
+	Product_Id int    `json:"productid"`
 	Rating     int32    `json:"rating"`
 }
 

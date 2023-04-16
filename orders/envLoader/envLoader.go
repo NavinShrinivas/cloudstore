@@ -8,7 +8,7 @@ import (
 )
 
 func CheckAndSetVariables() {
-	envRequired := []string{"PORT", "ALLOWED_ORIGINS", "USERHANDLE_ADDRESS", "DATABASE_USERNAME", "DATABASE_PASSWORD", "DATABASE_HOST", "DATABASE_PORT", "DATABASE_NAME"}
+	envRequired := []string{"PORT", "ALLOWED_ORIGINS", "USERHANDLE_ADDRESS", "PRODUCTS_ADDRESS", "DATABASE_USERNAME", "DATABASE_PASSWORD", "DATABASE_HOST", "DATABASE_PORT", "DATABASE_NAME"}
 
 	_, err := os.Stat(".env")
 	if err == nil {

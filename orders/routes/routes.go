@@ -22,41 +22,41 @@ func OrderRouter(orderRoutes *gin.RouterGroup, r *gin.Engine) bool {
 
 	orderRoutes.Use(authentication.CheckUserAuthMiddleware)
 
-	// orderRoutes.GET("/fetch", func(c *gin.Context) {
-	//
-	// 	wrappedclaims := authentication.GetClaims(c)
-	// 	claims := wrappedclaims.Claims
-	//
-	// 	var b communication.GetOrderRequest
-	// 	if err := c.ShouldBindJSON(&b); err != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"status":  false,
-	// 			"message": "invalid request. Please check the request body.",
-	// 		})
-	// 		log.Println("[WARN] Invalid request body for order fetch")
-	// 		return
-	// 	}
-	//
-	// 	message, httpstatus, status, order := database.GetOrder(claims)
-	// 	if status {
-	// 		c.JSON(httpstatus, gin.H{
-	// 			"status":   status,
-	// 			"message":  message,
-	// 			"username": claims.Username,
-	// 			"order":    order,
-	// 		})
-	// 		return
-	// 	} else {
-	// 		c.JSON(httpstatus, gin.H{
-	// 			"status":  status,
-	// 			"message": message,
-	// 		})
-	// 		return
-	// 	}
-	// })
-	//
+	orderRoutes.GET("/fetch", func(c *gin.Context) {
+
+		wrappedclaims := authentication.GetClaims(c)
+		claims := wrappedclaims.Claims
+
+		var b communication.GetOrderRequest
+		if err := c.ShouldBindJSON(&b); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  false,
+				"message": "invalid request. Please check the request body.",
+			})
+			log.Println("[WARN] Invalid request body for order fetch")
+			return
+		}
+
+		message, httpstatus, status, order := database.GetOrder(b, claims)
+		if status {
+			c.JSON(httpstatus, gin.H{
+				"status":   status,
+				"message":  message,
+				"username": claims.Username,
+				"order":    order,
+			})
+			return
+		} else {
+			c.JSON(httpstatus, gin.H{
+				"status":  status,
+				"message": message,
+			})
+			return
+		}
+	})
+
 	orderRoutes.GET("/all", func(c *gin.Context) {
-      //If user we can provide those orders, if seller we can send orders of all products of his
+		//If user we can provide those orders, if seller we can send orders of all products of his
 		wrappedclaims := authentication.GetClaims(c)
 		claims := wrappedclaims.Claims
 		message, httpstatus, status, orders := database.GetAllOrders(claims)
@@ -100,12 +100,11 @@ func OrderRouter(orderRoutes *gin.RouterGroup, r *gin.Engine) bool {
 			return
 		}
 
-
-      //[TODO] Validate if all product ids are valid, if not invalid request
+		//[TODO] Validate if all product ids are valid, if not invalid request
 		message, httpstatus, status, order_key := database.InsertOrder(b, claims)
 
 		if status {
-         message,httpstatus,status, order := database.InsertOrderItems(b,claims,order_key)
+			message, httpstatus, status, order := database.InsertOrderItems(b, claims, order_key)
 			c.JSON(httpstatus, gin.H{
 				"status":  status,
 				"message": message,
@@ -120,38 +119,7 @@ func OrderRouter(orderRoutes *gin.RouterGroup, r *gin.Engine) bool {
 			return
 		}
 	})
-
-	// orderRoutes.PUT("/cartfetch", func(c *gin.Context) {
-	// 	wrappedclaims := authentication.GetClaims(c)
-	// 	claims := wrappedclaims.Claims
-	//
-	// 	var b communication.CartFetchRequest
-	// 	err := c.BindJSON(&b)
-	// 	if err != nil {
-	// 		log.Println(err)
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"status":  false,
-	// 			"message": "invalid request",
-	// 		})
-	// 		return
-	// 	}
-	// 	message, httpstatus, status, order := database.UpdateOrder(b, claims)
-	// 	if status {
-	// 		c.JSON(httpstatus, gin.H{
-	// 			"status":  status,
-	// 			"message": message,
-	// 			"order":   order,
-	// 		})
-	// 		return
-	// 	} else {
-	// 		c.JSON(httpstatus, gin.H{
-	// 			"status":  status,
-	// 			"message": message,
-	// 		})
-	// 		return
-	// 	}
-	// })
-
+	//[TODO] Not part of minimum requrirements
 	// orderRoutes.DELETE("/delete", func(c *gin.Context) {
 	// 	wrappedclaims := authentication.GetClaims(c)
 	// 	claims := wrappedclaims.Claims
