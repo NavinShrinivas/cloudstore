@@ -4,7 +4,7 @@ pipeline {
         stage('cloning') {
             steps {
                git branch : "main",
-               url : "https://github.com/NavinShrinivas/PES2UG20CS237_Jenkins"
+               url : "git@github.com:NavinShrinivas/cloudstore.git"
             }
         }
         stage("build"){
