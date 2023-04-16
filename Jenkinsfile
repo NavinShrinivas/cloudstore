@@ -9,16 +9,9 @@ pipeline {
         }
         stage("build"){
             steps{
-               bash'''#!/bin/bash 
-                  cd ./products
-                  pwd
-                  ls
-                  docker build . -t navinshrinivas/products
-               '''
-
-
-               sh 'cd ../orders'
-               sh 'docker build . -t navinshrinivas/orders'
+               sh 'docker build ./userhandle/ -t  navinshrinivas/cloudstore_userhandle'
+               sh 'docker build ./products/ -t navinshrinivas/products'
+               sh 'docker build ./orders/ -t navinshrinivas/orders'
             }
         }
 
