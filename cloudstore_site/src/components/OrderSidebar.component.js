@@ -4,11 +4,20 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-function OrderSidebar(props) {
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux'
+import { updateCart, clearCart } from '../redux/features/userSlice'
 
+function OrderSidebar(props) {
+    const navigate = useNavigate();
+    const dispatch = useDispatch()
     var value = props.order
 
     // console.log(value)
+    const updateorder = () => {
+        dispatch(updateCart(value))
+        navigate("/cart")
+    }
 
     return (
         <div className="position-fixed filter-sidebar m-2 p-3 card" style={{ height: '85vh', maxHeight: '85vh', width: '23%', overflowY: 'scroll' }}>
@@ -16,7 +25,7 @@ function OrderSidebar(props) {
                 value.map(prod => {
 
                     return (
-                        <Container>
+                        <Container key={prod.ID}>
                             <Row>
                                 <Col>ID:{prod.ID}</Col>
                                 <Col>{prod.name}</Col>
@@ -34,7 +43,7 @@ function OrderSidebar(props) {
                 )
             }
             <center>
-                <a href="/cart"><Button variant="primary">Cart</Button></a>
+                <Button onClick={updateorder} variant="primary">Cart</Button>
             </center>
         </div >
 
