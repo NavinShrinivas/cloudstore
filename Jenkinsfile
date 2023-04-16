@@ -12,7 +12,7 @@ pipeline {
                sh 'pwd'
                sh 'ls'
 
-               sh 'cd userhandle'
+               sh 'cd ./userhandle/'
                sh 'pwd'
                sh 'ls'
                sh 'docker build . -t navinshrinivas/userhandle'
