@@ -43,7 +43,9 @@ function ProfilePage() {
                             </Col>
                         </Row>
                         <Row>
-                            {/* <Button variant="primary">Edit Profile</Button> */}
+                            <center>
+                                <a href="/editprofile"><Button variant="primary">Edit Profile</Button></a>
+                            </center>
                         </Row>
                     </Container>
                 </div>
