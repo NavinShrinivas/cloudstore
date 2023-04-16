@@ -20,6 +20,13 @@ spec:
               name: products-service
               port:
                 number: 5002
+        - path: /api/orders
+          pathType: Prefix
+          backend:
+            service:
+              name: orders-service
+              port:
+                number: 5002
         - path: /
           pathType: Prefix
           backend:
