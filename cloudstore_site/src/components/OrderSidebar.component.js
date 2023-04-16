@@ -4,8 +4,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-function OrderSidebar(props) {
+import { useSelector, useDispatch } from 'react-redux'
+import { login, logout, cart } from '../redux/features/userSlice'
 
+function OrderSidebar(props) {
+    const dispatch = useDispatch()
     var value = props.order
 
     // console.log(value)
@@ -33,8 +36,9 @@ function OrderSidebar(props) {
 
                 )
             }
+
             <center>
-                <a href="/cart"><Button variant="primary">Cart</Button></a>
+                <a href="/cart"><Button onClick={dispatch(cart(value))} variant="primary">Cart</Button></a>
             </center>
         </div >
 

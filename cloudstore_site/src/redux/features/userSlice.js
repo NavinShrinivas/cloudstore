@@ -8,13 +8,19 @@ export const userSlice = createSlice({
     },
     reducers: {
         login: (state, action) => {
+
+            state.value = action.payload
+            state.loggedin = true
+        },
+        cart: (state, action) => {
             state.value = action.payload
             state.loggedin = true
         },
         logout: (state) => {
             state.value = null
             state.loggedin = false
-        }
+        },
+
     },
 })
 
