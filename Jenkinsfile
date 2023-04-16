@@ -28,11 +28,6 @@ pipeline {
                sh 'kubectl apply -f cloudstore_ingress.yaml'
             }
         }
-        stage("test"){
-            steps{
-               sh './hello'
-            }
-        }
     }
     post{
       failure{
