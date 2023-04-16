@@ -1,12 +1,12 @@
 pipeline {
     agent any
     stages {
-        stage('cloning') {
-            steps {
-               git branch : "main",
-               url : "git@github.com:NavinShrinivas/cloudstore.git"
-            }
-        }
+        /* stage('cloning') { */
+        /*     steps { */
+        /*        git branch : "main", */
+        /*        url : "git@github.com:NavinShrinivas/cloudstore.git" */
+        /*     } */
+        /* } */
         stage("build"){
             steps{
                sh 'docker login -u navinshrinivas -p kakana071129'
