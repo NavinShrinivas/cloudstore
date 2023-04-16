@@ -9,6 +9,8 @@ pipeline {
         }
         stage("build"){
             steps{
+               sh 'cd cloudstore' 
+
                sh 'cd userhandle'
                sh 'docker build . -t navinshrinivas/userhandle'
 
