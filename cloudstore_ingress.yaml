@@ -26,7 +26,7 @@ spec:
             service:
               name: orders-service
               port:
-                number: 5002
+                number: 5003
         - path: /
           pathType: Prefix
           backend:
