@@ -11,11 +11,11 @@ pipeline {
             steps{
                sh 'docker login'
                sh 'docker build ./userhandle/ -t  navinshrinivas/cloudstore_userhandle'
-               sh `docker push navinshrinivas/userhandle`
+               sh 'docker push navinshrinivas/userhandle'
                sh 'docker build ./products/ -t navinshrinivas/products'
-               sh `docker push navinshrinivas/products`
+               sh 'docker push navinshrinivas/products'
                sh 'docker build ./orders/ -t navinshrinivas/orders'
-               sh `docker push navinshrinivas/orders`
+               sh 'docker push navinshrinivas/orders'
             }
         }
 
