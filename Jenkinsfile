@@ -18,15 +18,12 @@ pipeline {
         stage("deploy"){
             steps{
             //Assuming minikube to be running
-               sh 'cd userhandle'
-               sh 'kubectl apply -f user_deployment.yaml'
+               sh 'kubectl apply -f ./userhandle/user_deployment.yaml'
                sh 'kubectl rollout restart deployment userhandle'
 
-               sh 'cd ../products'
-               sh 'kubectl apply -f products_deployment.yaml'
+               sh 'kubectl apply -f ./products/products_deployment.yaml'
                sh 'kubectl rollout restart deployment products'
 
-               sh 'cd ..'
                sh 'kubectl apply -f cloudstore_ingress.yaml'
             }
         }
