@@ -15,13 +15,11 @@ function EditProfile() {
     const [query, setQuery] = useState({
         username: "",
         password: "",
-        newusername: "",
         newpassword: "",
         newname: "",
         newemail: "",
         newphone: "",
         newaddress: "",
-        newusertype: ""
     });
 
     const handleChange = () => (e) => {
@@ -46,7 +44,7 @@ function EditProfile() {
         }
 
 
-        // console.log(query)
+        console.log(query)
         axios.put("/api/account/update", query).then(resp => console.log(resp))
 
 
@@ -110,12 +108,7 @@ function EditProfile() {
                         <h2>Enter new details</h2>
 
                         <Row>
-                            <Col>
-                                <Form.Group controlId="formBasicUserName">
-                                    <Form.Label>Enter new UserName</Form.Label>
-                                    <Form.Control required value={query.newusername} onChange={handleChange()} type="text" name="newusername" />
-                                </Form.Group>
-                            </Col>
+
                             <Col>
                                 <Form.Group controlId="formBasicName">
                                     <Form.Label>Enter new Name</Form.Label>
@@ -144,12 +137,7 @@ function EditProfile() {
                                     <Form.Control required value={query.newpassword} onChange={handleChange()} type="password" name="newpassword" />
                                 </Form.Group>
                             </Col>
-                            <Col>
-                                <Form.Group controlId="formBasictype">
-                                    <Form.Label> Enter new UserType</Form.Label>
-                                    <Form.Control required value={query.newusertype} onChange={handleChange()} type="password" name="newusertype" />
-                                </Form.Group>
-                            </Col>
+
                         </Row>
                         <br />
 

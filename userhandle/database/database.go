@@ -175,15 +175,6 @@ func UpdateUserRecord(new_info communication.EditRequest, claims map[string]inte
 	}
 
 	// check the fields that are being updated
-	if new_info.NewUsername == "" {
-		new_info.NewUsername = existing_user.Username
-	} else {
-		var existing_user User
-		db.First(&existing_user, &User{Username: new_info.NewUsername})
-		if existing_user.Username == new_info.NewUsername {
-			return "This username is taken!", http.StatusConflict, false, nil
-		}
-	}
 
 	if new_info.NewEmail == "" {
 		new_info.NewEmail = existing_user.Email
@@ -236,7 +227,7 @@ func UpdateUserRecord(new_info communication.EditRequest, claims map[string]inte
 	}
 
 	updated_user_record := User{
-		Username: new_info.NewUsername,
+		Username: existing_user.Username,
 		Password: new_info.NewPassword,
 		Name:     new_info.NewName,
 		Email:    new_info.NewEmail,
@@ -251,7 +242,7 @@ func UpdateUserRecord(new_info communication.EditRequest, claims map[string]inte
 		return "Invalid malformed request", http.StatusForbidden, false, nil
 	} else {
 		return "User record updated!", http.StatusOK, true, &UserInfo{
-			Username: new_info.NewUsername,
+			Username: existing_user.Username,
 			Name:     new_info.NewName,
 			Email:    new_info.NewEmail,
 			Phone:    new_info.NewPhone,
