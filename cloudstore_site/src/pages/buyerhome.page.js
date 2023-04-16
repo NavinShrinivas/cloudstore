@@ -2,7 +2,7 @@ import axios from 'axios';
 // import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react';
 
-import { HomeNavbar, ProductCard, FilterSidebar } from '../components'
+import { HomeNavbar, ProductCard, FilterSidebar, OrderSidebar } from '../components'
 
 function BuyerHomePage() {
    // const [user, setUser] = useState(useSelector((state) => state.user.value))
@@ -20,6 +20,7 @@ function BuyerHomePage() {
 
    // eslint-disable-next-line
    const [order, setorder] = useState([])
+   const [orderside, setorderside] = useState([])
    // eslint-disable-next-line
    const [sellers, setsellers] = useState(new Set())
    // eslint-disable-next-line
@@ -27,7 +28,6 @@ function BuyerHomePage() {
 
    useEffect(() => {
       getproducts()
-      // eslint-disable-next-line
    }, [])
 
    useEffect(() => {
@@ -41,17 +41,26 @@ function BuyerHomePage() {
       }))
    }, [filter, productsData])
 
-   const AddtoOrder = (event) => {
-      order.push(event.target.value)
-      console.log(event.target)
+
+   const AddtoOrder = async (event) => {
+
+      // const orderinfo = []
+      // setorder([...order, parseInt(event.target.value)])
+      order.push(parseInt(event.target.value))
+      // console.log(order)
+      if (order.length !== 0) {
+         await axios.post("api/products/fetch", { ids: order }).then(async (resp) => setorderside(resp.data.products))
+      }
+
+
       // li_order.push(event.target.value)
-      console.log(order)
    }
+
 
    axios.defaults.withCredentials = true //NOTE : This is very important to be able to set cookies 
 
    const getproducts = () => {
-      axios.get("/api/products/all", {}).then(function(resp) {
+      axios.get("/api/products/all", {}).then(function (resp) {
          setProductsData(resp.data.products)
          setProducts(resp.data.products)
          for (let i = 0; i < resp.data.products.length; i++) {
@@ -66,6 +75,8 @@ function BuyerHomePage() {
       })
    }
 
+   // getsideorder()
+
    return (
       <>
          <div className="home-page" style={{ backgroundColor: '#f5f5f5', overflow: 'hidden' }}>
@@ -75,7 +86,7 @@ function BuyerHomePage() {
                   <div className="col-3">
                      <FilterSidebar sellers={sellers} manufacturers={manufacturers} filter={filter} setFilter={setFilter} />
                   </div>
-                  <div className="col-9">
+                  <div className="col-6">
                      <div className="row">
                         {
                            products.map(product => {
@@ -86,7 +97,11 @@ function BuyerHomePage() {
                         }
                      </div>
                   </div>
-                  <div>{order}</div>
+                  <div className="col-3">
+                     {order.length > 0 ? <OrderSidebar order={orderside} /> : null}
+                     <OrderSidebar order={orderside} />
+                  </div>
+                  {/* <div>{order}</div> */}
                </div>
             </div>
          </div >
