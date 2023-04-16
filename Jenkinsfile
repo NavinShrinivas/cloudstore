@@ -10,13 +10,29 @@ pipeline {
         stage("build"){
             steps{
                sh 'cd userhandle'
-               sh 'docker build -t . navinshrinivas/userhandle'
+               sh 'docker build . -t navinshrinivas/userhandle'
 
-               sh 'cd products'
-               sh 'docker build -t . navinshrinivas/products'
+               sh 'cd ../products'
+               sh 'docker build . -t navinshrinivas/products'
 
-               sh 'cd orders'
-               sh 'docker build -t . navinshrinivas/orders'
+               sh 'cd ../orders'
+               sh 'docker build . -t navinshrinivas/orders'
+            }
+        }
+
+        stage("deploy"){
+            steps{
+            //Assuming minikube to be running
+               sh 'cd userhandle'
+               sh 'kubectl apply -f user_deployment.yaml'
+               sh 'kubectl rollout restart deployment userhandle'
+
+               sh 'cd ../products'
+               sh 'kubectl apply -f products_deployment.yaml'
+               sh 'kubectl rollout restart deployment products'
+
+               sh 'cd ..'
+               sh 'kubectl apply -f cloudstore_ingress.yaml'
             }
         }
         stage("test"){
