@@ -9,18 +9,13 @@ pipeline {
         }
         stage("build"){
             steps{
-               sh 'pwd'
-               sh 'ls'
+               bash'''#!/bin/bash 
+                  cd ./products
+                  pwd
+                  ls
+                  docker build . -t navinshrinivas/products
+               '''
 
-               sh 'cd ./userhandle/'
-               sh 'pwd'
-               sh 'ls'
-               sh 'docker build . -t navinshrinivas/userhandle'
-
-               sh 'cd ../products'
-               sh 'pwd'
-               sh 'ls'
-               sh 'docker build . -t navinshrinivas/products'
 
                sh 'cd ../orders'
                sh 'docker build . -t navinshrinivas/orders'
