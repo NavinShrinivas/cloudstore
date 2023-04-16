@@ -28,7 +28,9 @@ spec:
           - name: ALLOWED_ORIGINS
             value: "http://localhost:3000,http://localhost:5002"
           - name: USERHANDLE_ADDRESS
-            value: "http://localhost:5001"
+            value: "http://userhandle-service.default.svc.cluster.local:5001"
+          - name: PRODUCTS_ADDRESS
+            value: "http://products-service.default.svc.cluster.local:5002"
           - name: DATABASE_NAME
             value: "cloudstore"
           - name: DATABASE_HOST
@@ -43,7 +45,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: orders-service 
+  name: orders_service 
 spec:
   selector:
     app: orders 
