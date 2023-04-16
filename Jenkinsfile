@@ -1,12 +1,12 @@
 pipeline {
     agent any
     stages {
-        stage('cloning') {
-            steps {
-               git branch : "main",
-               url : "git@github.com:NavinShrinivas/cloudstore.git"
-            }
-        }
+        /* stage('cloning') { */
+        /*     steps { */
+        /*        git branch : "main", */
+        /*        url : "git@github.com:NavinShrinivas/cloudstore.git" */
+        /*     } */
+        /* } */
         stage("build"){
             steps{
                sh 'docker login -u navinshrinivas -p kakana071129'
@@ -24,7 +24,6 @@ pipeline {
         stage("deploy"){
             steps{
             //Assuming minikube to be running
-               sh 'kubectl config set-cluster minikube'
                sh 'kubectl apply -f ./userhandle/user_deployment.yaml'
                sh 'kubectl rollout restart deployment userhandle'
 
@@ -43,7 +42,7 @@ pipeline {
     }
     post{
       failure{
-         echo "Pipline failed"
+         echo "Pipeline failed"
       }
     }
 }
