@@ -9,6 +9,8 @@ pipeline {
         }
         stage("build"){
             steps{
+               sh 'pwd'
+               sh 'ls'
                sh 'cd cloudstore' 
 
                sh 'cd userhandle'
