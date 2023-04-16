@@ -16,6 +16,8 @@ pipeline {
                sh 'docker push navinshrinivas/products'
                sh 'docker build ./orders/ -t navinshrinivas/orders'
                sh 'docker push navinshrinivas/orders'
+               sh 'docker build ./cloudstore_site/ -t navinshrinivas/cloudstore_site'
+               sh 'docker push navinshrinivas/cloudstore_site'
             }
         }
 
@@ -31,6 +33,9 @@ pipeline {
 
                sh 'kubectl apply -f ./orders/order_deployment.yaml'
                sh 'kubectl rollout restart deployment orders'
+
+               sh 'kubectl apply -f ./cloudstore_site/website_deployment.yaml'
+               sh 'kubectl rollout restart deployment website'
 
                sh 'kubectl apply -f cloudstore_ingress.yaml'
             }
