@@ -8,14 +8,16 @@ import axios from "axios";
 import { useEffect } from 'react';
 
 function CartPage() {
-    const cart = useSelector((state) => state.cart.value)
+    var cart = useSelector((state) => state.user.cart)
+    console.log(cart)
     useEffect(() => {
 
     }, [])
     return (
         <>
-            {/* <HomeNavbar />
-            {value.map(prod => {
+            <HomeNavbar />
+            <div style={{ marginTop: "100px" }}></div>
+            {cart.map(prod => {
 
                 return (
                     <Container>
@@ -33,7 +35,7 @@ function CartPage() {
                 )
             }
 
-            )} */}
+            )}
         </>
     );
 }

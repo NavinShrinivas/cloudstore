@@ -5,7 +5,7 @@ export const userSlice = createSlice({
     initialState: {
         loggedin: null,
         value: null,
-        cart: null
+        cart: []
     },
     reducers: {
         login: (state, action) => {
