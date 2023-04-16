@@ -7,5 +7,6 @@ import SellerHomePage from "./sellerhome.page";
 import ProfilePage from "./profile.page";
 import EditProfile from "./editprofile.page";
 import CartPage from "./cart.page"
+import OrderPage from "./order.page"
 
-export { HomePage, LandPage, LoginPage, RegisterPage, BuyerHomePage, SellerHomePage, ProfilePage, EditProfile, CartPage };
+export { HomePage, LandPage, LoginPage, RegisterPage, BuyerHomePage, SellerHomePage, ProfilePage, EditProfile, CartPage, OrderPage };
