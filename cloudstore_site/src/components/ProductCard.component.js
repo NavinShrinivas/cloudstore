@@ -28,7 +28,7 @@ function ProductCard({ product, AddtoOrder }) {
             <Card.Text>
                 Sold by {product.seller_username}
             </Card.Text>
-            <Button value={product.name} onClick={AddtoOrder} variant="primary">Order</Button>
+            <Button value={product.ID} onClick={AddtoOrder} variant="primary">Order</Button>
         </Card.Body>
     </Card>;
 }
