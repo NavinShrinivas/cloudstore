@@ -9,8 +9,14 @@ pipeline {
         }
         stage("build"){
             steps{
-               sh 'rm -r hello_exec'
-               sh 'make'
+               sh 'cd userhandle'
+               sh 'docker build -t . navinshrinivas/userhandle'
+
+               sh 'cd products'
+               sh 'docker build -t . navinshrinivas/products'
+
+               sh 'cd orders'
+               sh 'docker build -t . navinshrinivas/orders'
             }
         }
         stage("test"){
