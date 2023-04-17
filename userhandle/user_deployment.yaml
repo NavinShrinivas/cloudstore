@@ -26,7 +26,7 @@ spec:
           - name: PORT
             value: "5001"
           - name: ALLOWED_ORIGINS
-            value: "http://localhost:3000,http://products-service.default.svc.cluster.local:5002,http://hackframe.navinxyz.com:8081"
+            value: "http://localhost:3000,http://products-service.default.svc.cluster.local:5002,https://hackframe.navinxyz.com"
           - name: JWT_SECRET
             value: "helloworld"
           - name: JWT_LIFETIME
