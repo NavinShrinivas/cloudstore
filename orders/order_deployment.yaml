@@ -26,7 +26,7 @@ spec:
           - name: PORT
             value: "5003"
           - name: ALLOWED_ORIGINS
-            value: "http://localhost:3000,http://localhost:5002"
+            value: "http://localhost:3000,http://localhost:5002,http://hackframe.navinxyz.com:8081"
           - name: USERHANDLE_ADDRESS
             value: "http://userhandle-service.default.svc.cluster.local:5001"
           - name: PRODUCTS_ADDRESS
