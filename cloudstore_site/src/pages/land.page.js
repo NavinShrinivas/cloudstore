@@ -31,7 +31,7 @@ function LandPage() {
                         </div>
                         <div className="d-flex flex-column">
                             <div className="p" style={{ fontSize: '1.1rem', textAlign: 'justify' }}>
-                                Very cool website
+                                This is an simple minimal e-commerce application implemented by PK Navin Shrinivas, Mohammed Ayaan, Mukund Deepak and Mitul Joby as a part of UE20CS351 - Cloud Computing. Welcome!
                             </div>
                         </div>
 
