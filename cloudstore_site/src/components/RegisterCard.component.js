@@ -37,7 +37,7 @@ function RegisterCard() {
       setSuccessMessage(null);
       await axios.post('/api/account/register', newUser).then(res => {
          setErrorMessage(null);
-         if (res.data.created) {
+         if (res.data.status) {
             setSuccessMessage(res.data.message + " Please login.");
             setTimeout(() => {
                navigate("/login");
