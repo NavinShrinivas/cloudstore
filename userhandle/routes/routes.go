@@ -83,7 +83,7 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 	})
 
 	accountRoutes.POST("/logout", func(c *gin.Context) {
-		c.SetCookie("token", "", -1, "/", "localhost", false, true)
+		c.SetCookie("token", "", -1, "/", "navinxyz.com", false, true)
 		c.JSON(http.StatusOK, gin.H{
 			"status":  true,
 			"message": "Logged out successfully",
