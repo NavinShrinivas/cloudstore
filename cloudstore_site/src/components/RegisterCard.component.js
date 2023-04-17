@@ -18,7 +18,9 @@ function RegisterCard() {
          email: e.target.email.value,
          username: e.target.username.value,
          password: e.target.password.value,
-         confirmPassword: e.target.confirmPassword.value
+         confirmPassword: e.target.confirmPassword.value,
+         phone: e.target.phone.value,
+         usertype: "buyer"
       };
 
       if (newUser.username.includes(" ")) {
@@ -72,6 +74,12 @@ function RegisterCard() {
                         value={newUser.username} onChange={(e) => setNewUser({ ...newUser, username: e.target.value })} />
                      <label htmlFor="name">Username</label>
                   </div>
+
+                  <div className="form-floating mb-1">
+                     <input type="text" className="form-control" id="phone" placeholder="+91" required
+                        value={newUser.phone} onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })} />
+                     <label htmlFor="name">Phone</label>
+                  </div>
                   <div className="form-floating input-group mb-1">
                      <input type={passwordType} className="form-control" id="password" required minLength="6" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} />
                      <label htmlFor="password">Password</label>
@@ -90,7 +98,7 @@ function RegisterCard() {
                   </div>
                   {successMessage && <div className="alert alert-success" role="alert">{successMessage}</div>}
                   {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-                  <button className="w-100 btn btn-lg btn-dark" type="submit" >Create An Account</button>
+                  <button className="w-100 btn btn-lg btn-dark" type="submit">Create An Account</button>
                </form>
             </div>
          </div>
