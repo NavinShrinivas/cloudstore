@@ -13,7 +13,7 @@ function LandPage() {
                         <div className="d-flex flex-column align-items-center" style={{ width: '80%' }}>
                             <img src={CloudstoreLogo} alt="Cloudstore" style={{ width: '100%' }} />
                             <div className="text-white text-center my-3" style={{ fontSize: '1.5rem' }}>
-                                Cloudstore is a ...
+                                Cloudstore is a scalable microservice deployed web store
                             </div>
                         </div>
                         <div className="d-flex justify-content-around">
@@ -31,7 +31,7 @@ function LandPage() {
                         </div>
                         <div className="d-flex flex-column">
                             <div className="p" style={{ fontSize: '1.1rem', textAlign: 'justify' }}>
-                                Very cool website
+                                This is an simple minimal e-commerce application implemented by PK Navin Shrinivas, Mohammed Ayaan, Mukund Deepak and Mitul Joby as a part of UE20CS351 - Cloud Computing. Welcome!
                             </div>
                         </div>
 
