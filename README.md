@@ -19,4 +19,8 @@ To make our deloyment quick and easy, we resorted to using minikube cluster as o
 - Uses Jenkins pipline to auto deploy changes to github. Setting this up required messing with user permission heavily in the server instance. 
 - All of minikube and jenkins parts are hosted in DigitalOcean (8gb ram) droplet.
 
-
+#### Project Created and Maintained By:
+Navin Shrinivas PES2UG20CS237
+Mohammed Ayaan PES2UG20CS200
+Mukund Deepak PES2UG20CS206
+Mitul Joby PES2UG20CS199
