@@ -1,0 +1,3 @@
+Hello There Human! 👋
+
+Wanna help developing? Check out the repo on GitHub.
