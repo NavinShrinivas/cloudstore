@@ -2,7 +2,7 @@
 
 Created as a project in a very short sprint, complying to common microservice architechtures. Fully functional, backend heavy implementation. 
 
-> Note : To access this project and try it out for your self click here : [hackframe.navinxyz.com](https://hackframe.navinxyz.com)
+> Note : To access this project and try it out for your self click here : [hackframe.navinxyz.com](https://hackframe.navinshrinivas.com)
 
 ## Architechture 
 
