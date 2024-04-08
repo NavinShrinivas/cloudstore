@@ -53,7 +53,7 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 		if status {
 			message, httpstatus, status, token, claims, lifeTime := authentication.GenerateAuthToken(*user_record)
 			if status {
-				c.SetCookie("token", token, lifeTime, "/", "navinxyz.com", false, true)
+				c.SetCookie("token", token, lifeTime, "/", "127.0.0.1", false, true)
 				c.JSON(httpstatus, communication.LoginResponse{
 					Status:  status,
 					Message: message,
@@ -83,7 +83,7 @@ func AccountRouter(accountRoutes *gin.RouterGroup, r *gin.Engine) bool {
 	})
 
 	accountRoutes.POST("/logout", func(c *gin.Context) {
-		c.SetCookie("token", "", -1, "/", "navinxyz.com", false, true)
+		c.SetCookie("token", "", -1, "/", "127.0.0.1", false, true)
 		c.JSON(http.StatusOK, gin.H{
 			"status":  true,
 			"message": "Logged out successfully",

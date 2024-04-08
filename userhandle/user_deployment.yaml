@@ -26,21 +26,21 @@ spec:
           - name: PORT
             value: "5001"
           - name: ALLOWED_ORIGINS
-            value: "http://localhost:3000,http://products-service.default.svc.cluster.local:5002,https://hackframe.navinxyz.com"
+            value: "http://localhost:3000,http://products-service.default.svc.cluster.local:5002,https://hackframe.navinxyz.com,*"
           - name: JWT_SECRET
             value: "helloworld"
           - name: JWT_LIFETIME
             value: "15000"
           - name: DATABASE_NAME
-            value: "cloudstore"
+            value: "sql6697627"
           - name: DATABASE_HOST
-            value: "test.mysql.database.azure.com"
+            value: "sql6.freemysqlhosting.net"
           - name: DATABASE_PORT
             value: "3306"
           - name: DATABASE_USERNAME
-            value: "cloudadmin"
+            value: "sql6697627"
           - name: DATABASE_PASSWORD
-            value: "!Admin123"
+            value: "ApSbjzP6tU"
 ---
 apiVersion: v1
 kind: Service
